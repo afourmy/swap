@@ -4,6 +4,9 @@ from os import environ
 from os.path import abspath, dirname, join
 from sqlalchemy import exc as sql_exception
 from sys import dont_write_bytecode, path
+from werkzeug.utils import secure_filename
+from xlrd import open_workbook
+from xlrd.biffh import XLRDError
 
 # prevent python from writing *.pyc files / __pycache__ folders
 dont_write_bytecode = True
@@ -21,12 +24,6 @@ def configure_database(app):
     def shutdown_session(exception=None):
         db.session.remove()
     db.init_app(app)
-
-def configure_socket(app):
-    async_mode, thread = None, None
-    socketio = SocketIO(app, async_mode=async_mode)
-    thread_lock = Lock()
-    return socketio
     
 def import_graph():
     pass
@@ -35,12 +32,45 @@ def create_app(config='config'):
     app = Flask(__name__)
     app.config.from_object('config')
     configure_database(app)
-    import_cities()
     return app
 
 app = create_app()
 
 ## Views
+
+def allowed_file(name, allowed_extensions):
+    allowed_syntax = '.' in name
+    allowed_extension = name.rsplit('.', 1)[1].lower() in allowed_extensions
+    return allowed_syntax and allowed_extension
+
+@app.route('/object_creation', methods=['GET', 'POST'])
+def create_objects():
+    add_objects_form = AddObjects(request.form)
+    if 'add_objects' in request.form:
+        filename = request.files['file'].filename
+        if 'file' in request.files and allowed_file(filename, {'xls', 'xlsx'}):  
+            filename = secure_filename(filename)
+            filepath = join(current_app.config['UPLOAD_FOLDER'], filename)
+            request.files['file'].save(filepath)
+            book = open_workbook(filepath)
+            for obj_type, cls in object_class.items():
+                try:
+                    sheet = book.sheet_by_name(obj_type)
+                # if the sheet cannot be found, there's nothing to import
+                except XLRDError:
+                    continue
+                properties = sheet.row_values(0)
+                for row_index in range(1, sheet.nrows):
+                    kwargs = dict(zip(properties, sheet.row_values(row_index)))
+                    kwargs['type'] = obj_type
+                    object_factory(db, **kwargs)
+                db.session.commit()
+        else:
+            flash('no file submitted')
+    return render_template(
+        'index.html',
+        add_objects_form = add_objects_form
+        )
 
 @app.route('/', methods = ['GET', 'POST'])
 def algorithm():
@@ -60,7 +90,8 @@ def algorithm():
         )
 
 if __name__ == '__main__':
-    socketio.run(
-        app, 
-        port = int(environ.get('PORT', 5100))
+    app.run(
+        host = '0.0.0.0',
+        port = int(environ.get('PORT', 5100)),
+        threaded = True
         )

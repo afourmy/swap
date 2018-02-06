@@ -1,18 +1,15 @@
+from collections import OrderedDict
 from database import Base
-from sqlalchemy import Column, Integer, String, Float
+from sqlalchemy import Column, ForeignKey, Integer, String, Float
+from sqlalchemy.orm import backref, relationship
 
 class Object(Base):
     
+    # __abstract__ = True
     __tablename__ = 'Object'
 
     id = Column(Integer, primary_key=True)
     name = Column(String(120), unique=True)
-
-    
-    __mapper_args__ = {
-        'polymorphic_identity':'Object',
-        'polymorphic_on': type
-    }
     
     def __init__(self, **kwargs):
         for property, value in kwargs.items():
@@ -29,20 +26,12 @@ class Node(Object):
     longitude = Column(Float)
     latitude = Column(Float)
     
-    __mapper_args__ = {
-        'polymorphic_identity':'Node',
-    }
-    
     def __init__(self, **kwargs):
         super(Node, self).__init__(**kwargs)
 
 class Link(Object):
     
     __tablename__ = 'Link'
-    
-    __mapper_args__ = {
-        'polymorphic_identity': 'Link',
-    }
 
     id = Column(Integer, ForeignKey('Object.id'), primary_key=True)
     
@@ -76,3 +65,26 @@ class Link(Object):
         
     def __init__(self, **kwargs):
         super(Link, self).__init__(**kwargs)
+
+def object_factory(db, **kwargs):
+    obj_type = kwargs['type']
+    cls = Node if obj_type in node_class else Link
+    obj = get_obj(db, cls, name=kwargs['name'])
+    if obj:
+        for property, value in kwargs.items():
+            if property in obj.__dict__:
+                setattr(obj, property, value)
+    elif obj_type in link_class:
+        source = get_obj(db, Node, name=kwargs.pop('source'))
+        destination = get_obj(db, Node, name=kwargs.pop('destination'))
+        obj = link_class[obj_type](
+            source_id = source.id, 
+            destination_id = destination.id, 
+            source = source, 
+            destination = destination,
+            **kwargs
+            )
+    else:
+        obj = object_class[obj_type](**kwargs)
+    db.session.add(obj)
+    db.session.commit()
