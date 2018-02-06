@@ -198,7 +198,7 @@
         popupAnchor: [8, -5] // point from which the popup should open relative to the iconAnchor
         });
   
-      {% for id, properties in cities.items() %}  
+      {% for id, properties in nodes.items() %}  
         var marker = L.marker([
           {{ properties['latitude'] }}, 
           {{ properties['longitude'] }}], 
@@ -291,7 +291,7 @@
       var current_layer = WE.tileLayer(layers['gm']);
       current_layer.addTo(earth);
   
-      {% for id, properties in cities.items() %}  
+      {% for id, properties in nodes.items() %}  
         var marker = WE.marker(
         [
         {{ properties['latitude'] }}, 

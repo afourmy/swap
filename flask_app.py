@@ -80,12 +80,12 @@ def algorithm():
         'index.html',
         minimum_population = 500000,
         view = view,
-        cities = {
-            city.id: {
-                property: getattr(city, property)
-                for property in City.properties
+        nodes = {
+            node.id: {
+                property: getattr(node, property)
+                for property in ('id')
                 }
-            for city in City.query.all()
+            for node in Node.query.all()
             },
         )
 
