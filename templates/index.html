@@ -76,7 +76,7 @@
   </form>
   
   <div class="well well-sm" style="z-index:500; position: absolute; top: 20px; right:50vw; height:40px">
-    <strong><font color="red"><p id="score">Length</p></font></strong>
+    <strong><font color="red"><p id="score">Number of wavelengths:</p></font></strong>
   </div>
   
   <div class="panel-group" style="z-index:500; position: absolute; top: 20px; right:20px;">
@@ -110,79 +110,11 @@
     <div id="earth" style="position: absolute; top: 0; right: 0; bottom: 0; left: 0; width: 100%; height: 100%;">
   {% endif %}
   <script>
-    namespace = '/';
-    var socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port + namespace);
-    var currentAlgorithm = undefined;
-
-    function tourConstruction(algorithm){
-        if (window.optimizationTimer) {
-          clearAll();
-          clearTimeout(window.optimizationTimer);
-          window.optimizationTimer = 0;
-          }
-        socket.emit(algorithm);
-      }
-
-    function optimizationAlgorithm(algorithm) {
-      // we cannot use setInterval as the timer depends on the slider
-      // we have to use setTimeout for the speed to vary through time
-      function timeout() {
-        var speed = $('#slider2').val();
-        window.optimizationTimer = setTimeout(function () {
-          socket.emit(algorithm);
-          timeout();
-          }, 50000/speed);
-        };
-      timeout();
-      }
-
     var layers = {
       'osm': 'http://{s}.tile.osm.org/{z}/{x}/{y}.png',
       'gm': 'http://mt0.google.com/vt/lyrs=y&hl=en&x={x}&y={y}&z={z}&s=Ga',
       'nasa': 'http://tileserver.maptiler.com/nasa/{z}/{x}/{y}.jpg'
       };
-      
-    // lines of the path displayed
-    var polylines = [];
-    // lines of the best path ever found (for genetic algorithm)
-    var bestPolylines = [];
-    
-    function sleep(ms) {
-      return new Promise(resolve => setTimeout(resolve, ms));
-    }
-    
-    socket.on('current_solution', function(path) {
-      createPath(path, false, false);
-      });
-  
-    socket.on('build_tour', function(path, length) {
-      createPath(path, true, false);
-      $("#score").text(Math.round(Number(length)));
-      });
-      
-    socket.on('build_tours', function(paths, length) {
-      createIntermediatePaths(paths, false, false);
-      $("#score").text(Math.round(Number(length)));
-      });
-
-    socket.on('best_solution', function(path, best_length) {
-      $("#score").text(Math.round(Number(best_length)));
-      createPath(path, false, true);
-      });
-      
-    $('#slider1').slider({
-      tooltip_position: 'bottom',
-      formatter: function(value) {
-        return 'Speed';
-      }
-    });
-    
-    $('#slider2').slider({
-      tooltip_position: 'bottom',
-      formatter: function(value) {
-        return 'Speed';
-      }
-    });
 
     {% if view == '2D' %}
     
