@@ -1,4 +1,5 @@
 from flask import Flask, render_template, request, session
+from .forms import CreateObjectsForm
 from json import load
 from os import environ
 from os.path import abspath, dirname, join
@@ -43,10 +44,12 @@ def allowed_file(name, allowed_extensions):
     allowed_extension = name.rsplit('.', 1)[1].lower() in allowed_extensions
     return allowed_syntax and allowed_extension
 
-@app.route('/object_creation', methods=['GET', 'POST'])
-def create_objects():
-    add_objects_form = AddObjects(request.form)
-    if 'add_objects' in request.form:
+@app.route('/', methods = ['GET', 'POST'])
+def algorithm():
+    session['best'] = float('inf')
+    view = request.form['view'] if 'view' in request.form else '2D'
+    create_objects_form = CreateObjects(request.form)
+    if 'create_objects' in request.form:
         filename = request.files['file'].filename
         if 'file' in request.files and allowed_file(filename, {'xls', 'xlsx'}):  
             filename = secure_filename(filename)
@@ -69,16 +72,7 @@ def create_objects():
             flash('no file submitted')
     return render_template(
         'index.html',
-        add_objects_form = add_objects_form
-        )
-
-@app.route('/', methods = ['GET', 'POST'])
-def algorithm():
-    session['best'] = float('inf')
-    view = request.form['view'] if 'view' in request.form else '2D'
-    return render_template(
-        'index.html',
-        minimum_population = 500000,
+        create_objects_form = create_objects_form,
         view = view,
         nodes = {
             node.id: {

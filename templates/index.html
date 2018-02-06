@@ -82,12 +82,13 @@
   <div class="panel-group" style="z-index:500; position: absolute; top: 20px; right:20px;">
   
     <div class="panel panel-primary panel-transparent">
-      <div class="panel-heading">Construction heuristics</div>
+      <div class="panel-heading">Graph creation</div>
       <div class="panel-body">
         <div class="btn-group-vertical btn-block" >
-          <button type="button" class="btn btn-primary" onclick="tourConstruction('nearest_neighbor')">Nearest neighbor</button>
-          <button type="button" class="btn btn-primary" onclick="tourConstruction('nearest_insertion')">Nearest insertion</button>
-          <input id="slider1" data-slider-id='slider-css' type="text" data-slider-min="1" data-slider-max="1000" data-slider-step="10" data-slider-value="1000"/>
+          <form class="form-horizontal form-label-left" enctype="multipart/form-data" method="post" >
+            {{ create_objects_form.file() }}<br><br>
+            <button type="submit" class="btn btn-success" name="create_objects">Create objects</button>
+          </form>
         </div>
       </div>
     </div>
@@ -96,9 +97,8 @@
       <div class="panel-heading">Optimization heuristics</div>
       <div class="panel-body">
         <div class="btn-group-vertical btn-block" >
-          <button type="button" class="btn btn-primary" onclick="optimizationAlgorithm('2opt')">2opt</button>
-          <button type="button" class="btn btn-primary" onclick="optimizationAlgorithm('3opt')">3opt</button>
-          <input id="slider2" data-slider-id='slider-css' type="text" data-slider-min="10" data-slider-max="500" data-slider-step="10" data-slider-value="100"/>
+          <button type="button" class="btn btn-primary" onclick="optimizationAlgorithm('ILP')">Integer Linear Programming</button>
+          <button type="button" class="btn btn-primary" onclick="optimizationAlgorithm('LDF')">Largest Degre First</button>
         </div>
       </div>
     </div>
