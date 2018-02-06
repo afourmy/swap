@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request, session
-from .forms import CreateObjectsForm
+from forms import CreateObjectsForm
 from json import load
 from os import environ
 from os.path import abspath, dirname, join
@@ -48,7 +48,7 @@ def allowed_file(name, allowed_extensions):
 def algorithm():
     session['best'] = float('inf')
     view = request.form['view'] if 'view' in request.form else '2D'
-    create_objects_form = CreateObjects(request.form)
+    create_objects_form = CreateObjectsForm(request.form)
     if 'create_objects' in request.form:
         filename = request.files['file'].filename
         if 'file' in request.files and allowed_file(filename, {'xls', 'xlsx'}):  
