@@ -46,14 +46,14 @@ def allowed_file(name, allowed_extensions):
 
 @app.route('/', methods = ['GET', 'POST'])
 def algorithm():
-    session['best'] = float('inf')
+    print(request.form)
     view = request.form['view'] if 'view' in request.form else '2D'
     create_objects_form = CreateObjectsForm(request.form)
-    if 'create_objects' in request.form:
+    if 'create_objects' in request.form and 'file' in request.files:
         filename = request.files['file'].filename
         if 'file' in request.files and allowed_file(filename, {'xls', 'xlsx'}):  
             filename = secure_filename(filename)
-            filepath = join(current_app.config['UPLOAD_FOLDER'], filename)
+            filepath = join(config['UPLOAD_FOLDER'], filename)
             request.files['file'].save(filepath)
             book = open_workbook(filepath)
             for obj_type, cls in object_class.items():

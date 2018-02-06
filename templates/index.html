@@ -87,8 +87,8 @@
         <div class="btn-group-vertical btn-block" >
           <form class="form-horizontal form-label-left" enctype="multipart/form-data" method="post" >
             <div>
-              <button class="btn btn-success" onclick="document.getElementById('file').click()">Import graph (Excel)</button>
-              <input type="file" id="file" style="display:none" />
+              <label for="file" class="btn">Import a graph</label>
+              {{ create_objects_form.file(style="visibility:hidden; display:none") }}
             </div>
             <button type="submit" class="btn btn-success" name="create_objects">Create objects</button>
           </form>
@@ -97,11 +97,11 @@
     </div>
 
     <div class="panel panel-primary panel-transparent">
-      <div class="panel-heading">Wavelength assignment heuristics</div>
+      <div class="panel-heading">Optimization heuristics</div>
       <div class="panel-body">
         <div class="btn-group-vertical btn-block" >
           <button type="button" class="btn btn-primary" onclick="optimizationAlgorithm('ILP')">Integer Linear Programming</button>
-          <button type="button" class="btn btn-primary" onclick="optimizationAlgorithm('LDF')">Largest Degree First</button>
+          <button type="button" class="btn btn-primary" onclick="optimizationAlgorithm('LDF')">Largest Degre First</button>
         </div>
       </div>
     </div>
