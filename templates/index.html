@@ -92,13 +92,13 @@
         var current_layer = osm_layer;
       
         var icon_city = L.icon({
-          iconUrl: 'static/images/city.png',
+          iconUrl: 'static/images/optical_switch.gif',
           iconSize: [20, 20], // size of the icon
           iconAnchor: [9, 6], // point of the icon which will correspond to marker's location
           popupAnchor: [8, -5] // point from which the popup should open relative to the iconAnchor
           });
       
-        {% for id, properties in cities.items() %}  
+        {% for id, properties in nodes.items() %}  
           var marker = L.marker([
             {{ properties['latitude'] }}, 
             {{ properties['longitude'] }}], 

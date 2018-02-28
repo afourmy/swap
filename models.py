@@ -22,6 +22,12 @@ class Node(Object):
     
     __tablename__ = 'Node'
     
+    properties = (
+        'name',
+        'longitude', 
+        'latitude'
+        )
+    
     id = Column(Integer, ForeignKey('Object.id'), primary_key=True)
     longitude = Column(Float)
     latitude = Column(Float)
@@ -32,6 +38,12 @@ class Node(Object):
 class Link(Object):
     
     __tablename__ = 'Link'
+    
+    properties = (
+        'name',
+        'source', 
+        'destination'
+        )
 
     id = Column(Integer, ForeignKey('Object.id'), primary_key=True)
     

@@ -1,7 +1,8 @@
 from collections import OrderedDict
-from flask import Flask, jsonify, render_template
+from flask import Flask, jsonify, render_template, request
 from os.path import abspath, dirname
 from sys import dont_write_bytecode, path
+from werkzeug.utils import secure_filename
 from xlrd import open_workbook
 from xlrd.biffh import XLRDError
 
@@ -35,6 +36,13 @@ def create_app():
 app, solver = create_app()
 
 
+def allowed_file(name, allowed_extensions):
+    allowed_syntax = '.' in name
+    allowed_extension = name.rsplit('.', 1)[1].lower() in allowed_extensions
+    return allowed_syntax and allowed_extension
+
+
+
 @app.route('/', methods=['GET', 'POST'])
 def index():
     if request.method == 'POST':
@@ -53,9 +61,16 @@ def index():
                     kwargs['type'] = obj_type
                     object_factory(db, **kwargs)
                 db.session.commit()
+    nodes = {
+        node.id: OrderedDict([
+            (property, getattr(node, property))
+            for property in Node.properties
+            ])
+        for node in Node.query.all()
+        }
     return render_template(
         'index.html',
-        cities = {}
+        nodes=nodes
         )
 
 
