@@ -87,10 +87,10 @@ class Traffic(Link):
         super(Fiber, self).__init__(**kwargs)
 
 object_class = OrderedDict([
-('Node', Node),
-('Fiber', Fiber),
-('Traffic', Traffic)
-])
+    ('Node', Node),
+    ('Fiber', Fiber),
+    ('Traffic', Traffic)
+    ])
 
 def get_obj(db, model, **kwargs):
     return db.session.query(model).filter_by(**kwargs).first()

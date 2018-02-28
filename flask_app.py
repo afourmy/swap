@@ -37,6 +37,22 @@ app, solver = create_app()
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
+    if request.method == 'POST':
+        file = request.files['file']
+        if allowed_file(secure_filename(file.filename), {'xls', 'xlsx'}):  
+            book = open_workbook(file_contents=file.read())
+            for obj_type, cls in object_class.items():
+                try:
+                    sheet = book.sheet_by_name(obj_type)
+                # if the sheet cannot be found, there's nothing to import
+                except XLRDError:
+                    continue
+                properties = sheet.row_values(0)
+                for row_index in range(1, sheet.nrows):
+                    kwargs = dict(zip(properties, sheet.row_values(row_index)))
+                    kwargs['type'] = obj_type
+                    object_factory(db, **kwargs)
+                db.session.commit()
     return render_template(
         'index.html',
         cities = {}
@@ -45,14 +61,13 @@ def index():
 
 @app.route('/<algorithm>', methods=['POST'])
 def algorithm(algorithm):
-    session['best'] = float('inf')
     return jsonify(*getattr(tsp, algorithm)())
 
 
 if __name__ == '__main__':
     app.run(
-        debug = True,
         host = '0.0.0.0',
         port = 5000,
-        threaded = True
+        threaded = True,
+        debug = True
         )
