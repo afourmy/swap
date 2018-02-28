@@ -1,10 +1,7 @@
 from collections import OrderedDict
-from threading import Lock
 from flask import Flask, jsonify, render_template, request, session
-from flask_socketio import emit, SocketIO
-from json import dumps, load
+from json import dumps
 from os.path import abspath, dirname, join
-from sqlalchemy import exc as sql_exception
 from sys import dont_write_bytecode, path
 from werkzeug.utils import secure_filename
 from xlrd import open_workbook
@@ -15,9 +12,9 @@ path_app = dirname(abspath(__file__))
 if path_app not in path:
     path.append(path_app)
 
-from algorithms.pytsp import pyTSP
+from solver import Solver
 from database import db, create_database
-from models import City
+from models import *
 
 
 def configure_database(app):
@@ -36,30 +33,15 @@ def configure_socket(app):
     return socketio
 
 
-def import_cities():
-    with open(join(path_app, 'data', 'cities.json')) as data:
-        for city_dict in load(data):
-            if int(city_dict['population']) < 900000:
-                continue
-            city = City(**city_dict)
-            db.session.add(city)
-        try:
-            db.session.commit()
-        except sql_exception.IntegrityError:
-            db.session.rollback()
-
-
 def create_app():
     app = Flask(__name__)
     app.config['SECRET_KEY'] = 'key'
     configure_database(app)
-    socketio = configure_socket(app)
-    import_cities()
-    tsp = pyTSP()
-    return app, socketio, tsp
+    solver = Solver()
+    return app, solver
 
 
-app, socketio, tsp = create_app()
+app, solver = create_app()
 
 
 def allowed_file(name, allowed_extensions):
@@ -98,8 +80,7 @@ def index():
     return render_template(
         'index.html',
         view=view,
-        cities=cities,
-        async_mode=socketio.async_mode
+        cities=cities
         )
 
 
@@ -107,16 +88,6 @@ def index():
 def algorithm(algorithm):
     session['best'] = float('inf')
     return jsonify(*getattr(tsp, algorithm)())
-
-
-@socketio.on('genetic_algorithm')
-def genetic_algorithm(data):
-    if 'generation' not in session:
-        session['generation'] = []
-    session['generation'], best, length = tsp.cycle(session['generation'], **data)
-    if length < session['best']:
-        session['best'] = length
-        emit('draw', ([best], [length]))
 
 
 if __name__ == '__main__':
