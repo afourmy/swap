@@ -1,16 +1,17 @@
 <!DOCTYPE HTML>
 <html>
   <head>
-  <title>A solver for the Wavelength Allocation Problem</title>
+  <title>TSP 2D/3D GIS visualization</title>
   <!-- Bootstrap -->
   <link href="{{ url_for('static', filename='bootstrap/bootstrap.min.css') }}" rel="stylesheet">
   <!-- Leaflet -->
   <link href="{{ url_for('static', filename='leaflet/leaflet.css') }}" rel="stylesheet">
+  <!-- CSS code specific to pyTSP -->
+  <link href="{{ url_for('static', filename='swap/swap.css') }}" rel="stylesheet">
   <!-- jQuery -->
   <script src="{{ url_for('static', filename='jquery/jquery.min.js') }}"></script>
   <!-- Bootstrap -->
   <script src="{{ url_for('static', filename='bootstrap/bootstrap.min.js') }}"></script>
-  <!-- Leaflet -->
   <script src="{{ url_for('static', filename='leaflet/leaflet.js') }}"></script>
   </head>
   <body>  
@@ -37,27 +38,7 @@
           <div class="btn-group-vertical btn-block" >
             <button type="button" class="btn btn-primary" onclick="tourConstruction('nearest_neighbor')">Nearest neighbor</button>
             <button type="button" class="btn btn-primary" onclick="tourConstruction('nearest_insertion')">Nearest insertion</button>
-            <button type="button" class="btn btn-primary" onclick="tourConstruction('farthest_insertion')">Farthest insertion</button>
-            <button type="button" class="btn btn-primary" onclick="tourConstruction('cheapest_insertion')">Cheapest insertion</button>
           </div>
-        </div>
-      </div>
-
-      <div class="panel panel-primary panel-transparent">
-        <div class="panel-heading">Optimization heuristics</div>
-        <div class="panel-body">  
-          <div class="btn-group-vertical btn-block" >
-            <button type="button" class="btn btn-primary" onclick="tourConstruction('pairwise_exchange')">Pairwise exchange</button>
-            <button type="button" class="btn btn-primary" onclick="tourConstruction('node_insertion')">Node insertion</button>
-            <button type="button" class="btn btn-primary" onclick="tourConstruction('edge_insertion')">Edge insertion</button>
-          </div>
-        </div>
-      </div>
-  
-      <div class="panel panel-primary panel-transparent">
-        <div class="panel-heading">Visualization speed</div>
-        <div class="panel-body">    
-            <input id="base_slider" data-slider-id='slider-css' type="text" data-slider-min="1" data-slider-max="1000" data-slider-step="10" data-slider-value="100"/>
         </div>
       </div>
     </div>
@@ -99,36 +80,40 @@
         'nasa': 'http://tileserver.maptiler.com/nasa/{z}/{x}/{y}.jpg'
         };
 
-      var map = L.map('map', { zoomControl:false }).setView([39, -98], 5);
-      var osm_layer = L.tileLayer(layers['osm']);
-      map.addLayer(osm_layer);
-      var current_layer = osm_layer;
-    
-      var icon_city = L.icon({
-        iconUrl: 'static/images/city.png',
-        iconSize: [20, 20], // size of the icon
-        iconAnchor: [9, 6], // point of the icon which will correspond to marker's location
-        popupAnchor: [8, -5] // point from which the popup should open relative to the iconAnchor
-        });
-    
-      {% for id, properties in cities.items() %}  
-        var marker = L.marker([
-          {{ properties['latitude'] }}, 
-          {{ properties['longitude'] }}], 
+      /* The following part is made of the code that depends on the dimension
+      - Initialization of the map (resp. globe) and drawing of the icons
+      - Initialiation of the tile layer */
+      
+      // 2D code
+        var map = L.map('map', { zoomControl:false }).setView([39, -98], 5);
+        var osm_layer = L.tileLayer(layers['osm']);
+        map.addLayer(osm_layer);
+        var current_layer = osm_layer;
+      
+        var icon_city = L.icon({
+          iconUrl: 'static/images/city.png',
+          iconSize: [20, 20], // size of the icon
+          iconAnchor: [9, 6], // point of the icon which will correspond to marker's location
+          popupAnchor: [8, -5] // point from which the popup should open relative to the iconAnchor
+          });
+      
+        {% for id, properties in cities.items() %}  
+          var marker = L.marker([
+            {{ properties['latitude'] }}, 
+            {{ properties['longitude'] }}], 
+            );
+          
+          marker.bindPopup("{% for property in properties %}\
+          <b>{{ property|capitalize }}</b>: {{ properties[property] }}<br>\
+          {% endfor %}<br>");
+          
+          marker.bindTooltip("{{ properties['name'] }}", {
+            permanent: false, 
+            }
           );
-        
-        marker.bindPopup("{% for property in properties %}\
-        <b>{{ property|capitalize }}</b>: {{ properties[property] }}<br>\
-        {% endfor %}<br>");
-        
-        marker.bindTooltip("{{ properties['name'] }}", {
-          permanent: false, 
-          }
-        );
-        marker.setIcon(icon_city), 
-        marker.addTo(map);
-      {% endfor %}
-
+          marker.setIcon(icon_city), 
+          marker.addTo(map);
+        {% endfor %}
       
       function switch_layer(layer){
         map.removeLayer(current_layer);
@@ -142,6 +127,7 @@
           map.removeLayer(polylines[i]);
           }
         }
+
     </script>
   </body>
 </html>
