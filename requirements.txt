@@ -1,0 +1,6 @@
+flask
+flask_socketio
+flask_sqlalchemy
+numpy
+cvxopt
+xlrd
