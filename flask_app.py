@@ -61,16 +61,19 @@ def index():
                     kwargs['type'] = obj_type
                     object_factory(db, **kwargs)
                 db.session.commit()
-    nodes = {
-        node.id: OrderedDict([
-            (property, getattr(node, property))
-            for property in Node.properties
-            ])
-        for node in Node.query.all()
+    objects = {
+        obj_type: {
+            obj: OrderedDict([
+                (property, getattr(obj, property))
+                for property in cls.properties
+                ])
+            for obj in cls.query.all()
+            }
+        for obj_type, cls in object_class.items()
         }
     return render_template(
         'index.html',
-        nodes=nodes
+        objects=objects
         )
 
 
