@@ -79,40 +79,32 @@
         'nasa': 'http://tileserver.maptiler.com/nasa/{z}/{x}/{y}.jpg'
         };
 
-      /* The following part is made of the code that depends on the dimension
-      - Initialization of the map (resp. globe) and drawing of the icons
-      - Initialiation of the tile layer */
-      
-      // 2D code
-        var map = L.map('map', { zoomControl:false }).setView([48, 2], 5);
-        var osm_layer = L.tileLayer(layers['osm']);
-        map.addLayer(osm_layer);
-        var current_layer = osm_layer;
-      
-        var icon_city = L.icon({
-          iconUrl: 'static/images/optical_switch.gif',
-          iconSize: [20, 20], // size of the icon
-          iconAnchor: [9, 6], // point of the icon which will correspond to marker's location
-          popupAnchor: [8, -5] // point from which the popup should open relative to the iconAnchor
-          });
-      
-        {% for properties in objects['Node'].values() %}  
-          var marker = L.marker([
-            {{ properties['latitude'] }}, 
-            {{ properties['longitude'] }}], 
-            );
-          
-          marker.bindPopup("{% for property in properties %}\
-          <b>{{ property|capitalize }}</b>: {{ properties[property] }}<br>\
-          {% endfor %}<br>");
-          
-          marker.bindTooltip("{{ properties['name'] }}", {
-            permanent: false, 
-            }
+      var map = L.map('map', { zoomControl:false }).setView([48, 2], 5);
+      var osm_layer = L.tileLayer(layers['osm']);
+      map.addLayer(osm_layer);
+      var current_layer = osm_layer;
+    
+      var icon_city = L.icon({
+        iconUrl: 'static/images/optical_switch.gif',
+        iconSize: [20, 20], // size of the icon
+        iconAnchor: [9, 6], // point of the icon which will correspond to marker's location
+        popupAnchor: [8, -5] // point from which the popup should open relative to the iconAnchor
+        });
+    
+      {% for properties in objects['Node'].values() %}  
+        var marker = L.marker([
+          {{ properties['latitude'] }}, 
+          {{ properties['longitude'] }}], 
           );
-          marker.setIcon(icon_city), 
-          marker.addTo(map);
-        {% endfor %}
+        
+        marker.bindPopup("{% for property in properties %}\
+        <b>{{ property|capitalize }}</b>: {{ properties[property] }}<br>\
+        {% endfor %}<br>");
+        
+        marker.bindTooltip("{{ properties['name'] }}", {permanent: false, });
+        marker.setIcon(icon_city), 
+        marker.addTo(map);
+      {% endfor %}
       
       function switch_layer(layer){
         map.removeLayer(current_layer);
@@ -127,99 +119,99 @@
           }
         }
 
-        var geoJson = {
-          "type": "FeatureCollection",
-          "features": [
-            {
-              "type": "Feature",
-              "properties": {
-                "lines": [2, 3]
-              },
-              "geometry": {
-                "type": "LineString",
-                "coordinates": [
-                  {% for fiber in objects['Fiber'].keys() %}
-                  [
-                    {{ fiber['source']['longitude'] }},
-                    {{ fiber['source']['latitude'] }}
-                  ],
-                  [
-                    {{ fiber['destination']['longitude'] }},
-                    {{ fiber['destination']['latitude'] }}
-                  ],
-                  {% endfor %}
-                ]
-              }
+      var geoJson = {
+        "type": "FeatureCollection",
+        "features": [
+          {
+            "type": "Feature",
+            "properties": {
+              "lines": [2, 3]
             },
-          ]
-        };
+            "geometry": {
+              "type": "LineString",
+              "coordinates": [
+                {% for fiber in objects['Fiber'].keys() %}
+                [
+                  {{ fiber['source']['longitude'] }},
+                  {{ fiber['source']['latitude'] }}
+                ],
+                [
+                  {{ fiber['destination']['longitude'] }},
+                  {{ fiber['destination']['latitude'] }}
+                ],
+                {% endfor %}
+              ]
+            }
+          },
+        ]
+      };
 
-        var lineWeight = 6;
-        var lineColors = ['red', '#08f', '#0c0', '#f80'];
+      var lineWeight = 6;
+      var lineColors = ['red', '#08f', '#0c0', '#f80'];
 
-        // manage overlays in groups to ease superposition order
-        var outlines = L.layerGroup();
-        var lineBg = L.layerGroup();
-        var busLines = L.layerGroup();
-        var busStops = L.layerGroup();
+      // manage overlays in groups to ease superposition order
+      var outlines = L.layerGroup();
+      var lineBg = L.layerGroup();
+      var busLines = L.layerGroup();
+      var busStops = L.layerGroup();
 
-        var ends = [];
-        function addStop(ll) {
-          for(var i=0, found=false; i<ends.length && !found; i++) {
-            found = (ends[i].lat == ll.lat && ends[i].lng == ll.lng);
-          }
-          if(!found) {
-            ends.push(ll);
-          }
+      var ends = [];
+      function addStop(ll) {
+        for(var i=0, found=false; i<ends.length && !found; i++) {
+          found = (ends[i].lat == ll.lat && ends[i].lng == ll.lng);
+        }
+        if(!found) {
+          ends.push(ll);
+        }
+      }
+
+      var lineSegment, linesOnSegment, segmentCoords, segmentWidth;
+      geoJson.features.forEach(function(lineSegment) {
+        segmentCoords = L.GeoJSON.coordsToLatLngs(lineSegment.geometry.coordinates, 0);
+
+        linesOnSegment = lineSegment.properties.lines;
+        segmentWidth = linesOnSegment.length * (lineWeight + 1);
+
+        L.polyline(segmentCoords, {
+          color: '#000',
+          weight: segmentWidth + 5,
+          opacity: 1
+        }).addTo(outlines);
+
+        L.polyline(segmentCoords, {
+          color: '#fff',
+          weight: segmentWidth + 3,
+          opacity: 1
+        }).addTo(lineBg);
+
+        for(var j=0;j<linesOnSegment.length;j++) {
+          L.polyline(segmentCoords, {
+            color: lineColors[linesOnSegment[j]],
+            weight: lineWeight,
+            opacity: 1,
+            offset: j * (lineWeight + 1) - (segmentWidth / 2) + ((lineWeight + 1) / 2)
+          }).addTo(busLines);
         }
 
-        var lineSegment, linesOnSegment, segmentCoords, segmentWidth;
-        geoJson.features.forEach(function(lineSegment) {
-          segmentCoords = L.GeoJSON.coordsToLatLngs(lineSegment.geometry.coordinates, 0);
+        addStop(segmentCoords[0]);
+        addStop(segmentCoords[segmentCoords.length - 1]);
+      });
 
-          linesOnSegment = lineSegment.properties.lines;
-          segmentWidth = linesOnSegment.length * (lineWeight + 1);
+      ends.forEach(function(endCoords) {
+        L.circleMarker(endCoords, {
+          color: '#000',
+          fillColor: '#ccc',
+          fillOpacity: 1,
+          radius: 10,
+          weight: 4,
+          opacity: 1
+        }).addTo(busStops);
+      });
 
-          L.polyline(segmentCoords, {
-            color: '#000',
-            weight: segmentWidth + 5,
-            opacity: 1
-          }).addTo(outlines);
-
-          L.polyline(segmentCoords, {
-            color: '#fff',
-            weight: segmentWidth + 3,
-            opacity: 1
-          }).addTo(lineBg);
-
-          for(var j=0;j<linesOnSegment.length;j++) {
-            L.polyline(segmentCoords, {
-              color: lineColors[linesOnSegment[j]],
-              weight: lineWeight,
-              opacity: 1,
-              offset: j * (lineWeight + 1) - (segmentWidth / 2) + ((lineWeight + 1) / 2)
-            }).addTo(busLines);
-          }
-
-          addStop(segmentCoords[0]);
-          addStop(segmentCoords[segmentCoords.length - 1]);
-        });
-
-        ends.forEach(function(endCoords) {
-          L.circleMarker(endCoords, {
-            color: '#000',
-            fillColor: '#ccc',
-            fillOpacity: 1,
-            radius: 10,
-            weight: 4,
-            opacity: 1
-          }).addTo(busStops);
-        });
-
-        outlines.addTo(map);
-        lineBg.addTo(map);
-        busLines.addTo(map);
-        busStops.addTo(map);
+      outlines.addTo(map);
+      lineBg.addTo(map);
+      busLines.addTo(map);
+      busStops.addTo(map);
 
     </script>
   </body>
