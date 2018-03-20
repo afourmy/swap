@@ -71,6 +71,8 @@ def index():
             }
         for obj_type, cls in object_class.items()
         }
+    for node in Node.query.all():
+        print('ttt'*100, node.adjacencies('fiber'))
     return render_template(
         'index.html',
         objects=objects
@@ -79,7 +81,7 @@ def index():
 
 @app.route('/<algorithm>', methods=['POST'])
 def algorithm(algorithm):
-    return jsonify(*getattr(tsp, algorithm)())
+    return jsonify(*getattr(solver, algorithm)())
 
 
 if __name__ == '__main__':

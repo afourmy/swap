@@ -35,10 +35,10 @@ class Node(Object):
     def __init__(self, **kwargs):
         super(Node, self).__init__(**kwargs)
 
-    def adjacencies(self):
-        all_nodes = [x.source for x in self.higher_edges]
-        all_nodes.extend([x.destination for x in self.lower_edges])
-        return all_nodes
+    def adjacencies(self, type):
+        adj = [(x.source, x) for x in self.higher_edges]
+        adj.extend([(x.destination, x) for x in self.lower_edges])
+        return filter(lambda a: a[1].subtype == type, adj)
         
 
 class Link(Object):
@@ -48,11 +48,16 @@ class Link(Object):
     properties = (
         'name',
         'source', 
-        'destination'
+        'destination',
+        'cost'
         )
 
     id = Column(Integer, ForeignKey('Object.id'), primary_key=True)
-    
+    subtype = Column(String)
+    cost = Column(Integer)
+    flowSD = Column(Integer)
+    flowDS = Column(Integer)
+
     source_id = Column(
         Integer,
         ForeignKey('Node.id')
@@ -83,6 +88,7 @@ class Link(Object):
         
     def __init__(self, **kwargs):
         super(Link, self).__init__(**kwargs)
+        self.cost = 1
 
 class Fiber(Link):
     
@@ -93,6 +99,7 @@ class Fiber(Link):
     
     def __init__(self, **kwargs):
         super(Fiber, self).__init__(**kwargs)
+        self.subtype = 'fiber'
 
 class Traffic(Link):
     
@@ -102,7 +109,8 @@ class Traffic(Link):
     color = '#902bec'
     
     def __init__(self, **kwargs):
-        super(Fiber, self).__init__(**kwargs)
+        super(Traffic, self).__init__(**kwargs)
+        self.subtype = 'traffic'
 
 object_class = OrderedDict([
     ('Node', Node),

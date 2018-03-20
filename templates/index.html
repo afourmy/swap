@@ -36,11 +36,11 @@
     </form>
     <div class="panel-group" style="z-index:500; position: absolute; top: 20px; left:20px;">
       <div class="panel panel-primary panel-transparent">
-        <div class="panel-heading">Construction heuristics</div>
+        <div class="panel-heading">RWA solver</div>
         <div class="panel-body">
           <div class="btn-group-vertical btn-block" >
-            <button type="button" class="btn btn-primary" onclick="tourConstruction('nearest_neighbor')">Nearest neighbor</button>
-            <button type="button" class="btn btn-primary" onclick="tourConstruction('nearest_insertion')">Nearest insertion</button>
+            <button type="button" class="btn btn-primary" onclick="RWA('shortest_path')">Routing</button>
+            <button type="button" class="btn btn-primary" onclick="RWA('wavelength_assignment')">Wavelength Assignment</button>
           </div>
         </div>
       </div>
@@ -61,21 +61,17 @@
         $("#fileform").submit();
       };
       
-      function tourConstruction(algorithm){
-          clearLines();
-          if (window.optimizationTimer) {
-            clearTimeout(window.optimizationTimer);
-            window.optimizationTimer = 0;
-            }
-          $.ajax({
-              type: "POST",
-              url: "/" + algorithm,
-              dataType: "json",
-              success: function(data){
-                  draw(...data);
-              }
-          });
-        }
+      function RWA(algorithm){
+        clearLines();
+        $.ajax({
+          type: "POST",
+          url: "/" + algorithm,
+          dataType: "json",
+          success: function(data){
+            draw(...data);
+          }
+        });
+      }
 
       var layers = {
         'osm': 'http://{s}.tile.osm.org/{z}/{x}/{y}.png',
@@ -88,7 +84,7 @@
       - Initialiation of the tile layer */
       
       // 2D code
-        var map = L.map('map', { zoomControl:false }).setView([39, -98], 5);
+        var map = L.map('map', { zoomControl:false }).setView([48, 2], 5);
         var osm_layer = L.tileLayer(layers['osm']);
         map.addLayer(osm_layer);
         var current_layer = osm_layer;
