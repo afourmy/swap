@@ -13,7 +13,7 @@ if path_app not in path:
 
 from solver import Solver
 from database import db, create_database
-from models import *
+from models import object_class, object_factory, Traffic
 
 
 def configure_database(app):
@@ -42,12 +42,11 @@ def allowed_file(name, allowed_extensions):
     return allowed_syntax and allowed_extension
 
 
-
 @app.route('/', methods=['GET', 'POST'])
 def index():
     if request.method == 'POST':
         file = request.files['file']
-        if allowed_file(secure_filename(file.filename), {'xls', 'xlsx'}):  
+        if allowed_file(secure_filename(file.filename), {'xls', 'xlsx'}):
             book = open_workbook(file_contents=file.read())
             for obj_type, cls in object_class.items():
                 try:
@@ -66,32 +65,32 @@ def index():
             obj: OrderedDict([
                 (property, getattr(obj, property))
                 for property in cls.properties
-                ])
+            ])
             for obj in cls.query.all()
-            }
-        for obj_type, cls in object_class.items()
         }
-    for node in Node.query.all():
-        print('ttt'*100, node.adjacencies('fiber'))
+        for obj_type, cls in object_class.items()
+    }
     return render_template(
         'index.html',
         objects=objects
-        )
+    )
 
 
 @app.route('/<algorithm>', methods=['POST'])
 def algorithm(algorithm):
     return jsonify(*getattr(solver, algorithm)())
 
+
 @app.route('/path_<traffic_link>', methods=['POST'])
 def get_path(traffic_link):
     traffic = db.session.query(Traffic).filter_by(name=traffic_link).first()
     return jsonify(traffic.path)
 
+
 if __name__ == '__main__':
     app.run(
-        host = '0.0.0.0',
-        port = 5000,
-        threaded = True,
-        debug = True
-        )
+        host='0.0.0.0',
+        port=5000,
+        threaded=True,
+        debug=True
+    )
