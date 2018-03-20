@@ -110,7 +110,7 @@
         current_layer = L.tileLayer(layers[layer]);
         map.addLayer(current_layer);
         }
-      
+
       var polylines = [];
       function clearLines(){
         for (i = 0; i < polylines.length; i++) {
@@ -133,6 +133,7 @@
         polyline.addTo(map);
         polylines.push(polyline);
         
+        
         polyline.bindPopup("{% for property in properties %}\
         <b>{{ property|capitalize }}</b>: {{ properties[property] }}<br>\
         {% endfor %}<br>");
@@ -152,6 +153,16 @@
 
         polyline.addTo(map);
         polylines.push(polyline);
+        polyline.on('click', function() {
+          $.ajax({
+            type: "POST",
+            url: "/path_" + "{{ link.name }}",
+            dataType: "json",
+            success: function(data){
+              console.log(data);
+            }
+          });
+        });
         
         polyline.bindPopup("{% for property in properties %}\
         <b>{{ property|capitalize }}</b>: {{ properties[property] }}<br>\

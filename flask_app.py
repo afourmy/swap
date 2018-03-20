@@ -83,6 +83,9 @@ def index():
 def algorithm(algorithm):
     return jsonify(*getattr(solver, algorithm)())
 
+@app.route('/path_<traffic_link>', methods=['POST'])
+def get_path(traffic_link):
+    return jsonify(traffic_link)
 
 if __name__ == '__main__':
     app.run(
