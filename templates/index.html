@@ -62,13 +62,12 @@
       };
       
       function RWA(algorithm){
-        clearLines();
         $.ajax({
           type: "POST",
           url: "/" + algorithm,
           dataType: "json",
           success: function(data){
-            draw(...data);
+            console.log(data);
           }
         });
       }
@@ -118,14 +117,14 @@
           map.removeLayer(polylines[i]);
           }
         }
-        
-      {% for traffic in objects['Traffic'].keys() %}
-        var pointA = new L.LatLng({{ traffic['source']['latitude'] }}, {{ traffic['source']['longitude'] }});
-        var pointB = new L.LatLng({{ traffic['destination']['latitude'] }}, {{ traffic['destination']['longitude'] }});
+
+      {% for link, properties in objects['Fiber'].items() %}
+        var pointA = new L.LatLng({{ link['source']['latitude'] }}, {{ link['source']['longitude'] }});
+        var pointB = new L.LatLng({{ link['destination']['latitude'] }}, {{ link['destination']['longitude'] }});
         var pointList = [pointA, pointB];
 
         var polyline = new L.Polyline(pointList, {
-          color: '#0000ff',
+          color: '#245611',
           weight: 3,
           opacity: 1,
           smoothFactor: 1
@@ -133,8 +132,32 @@
 
         polyline.addTo(map);
         polylines.push(polyline);
+        
+        polyline.bindPopup("{% for property in properties %}\
+        <b>{{ property|capitalize }}</b>: {{ properties[property] }}<br>\
+        {% endfor %}<br>");
       {% endfor %}
 
+      {% for link, properties in objects['Traffic'].items() %}
+        var pointA = new L.LatLng({{ link['source']['latitude'] }}, {{ link['source']['longitude'] }});
+        var pointB = new L.LatLng({{ link['destination']['latitude'] }}, {{ link['destination']['longitude'] }});
+        var pointList = [pointA, pointB];
+
+        var polyline = new L.Polyline(pointList, {
+          color: '#245611',
+          weight: 3,
+          opacity: 1,
+          smoothFactor: 1
+          });
+
+        polyline.addTo(map);
+        polylines.push(polyline);
+        
+        polyline.bindPopup("{% for property in properties %}\
+        <b>{{ property|capitalize }}</b>: {{ properties[property] }}<br>\
+        {% endfor %}<br>");
+      {% endfor %}
+      /*
       var geoJson = {
         "type": "FeatureCollection",
         "features": [
@@ -228,7 +251,7 @@
       lineBg.addTo(map);
       busLines.addTo(map);
       busStops.addTo(map);
-
+      */
     </script>
   </body>
 </html>

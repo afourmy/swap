@@ -1,6 +1,7 @@
 from collections import OrderedDict
 from database import Base
-from sqlalchemy import Column, ForeignKey, Integer, String, Float
+from sqlalchemy import Column, ForeignKey, Integer, String, Float, PickleType
+from sqlalchemy.ext.mutable import MutableList
 from sqlalchemy.orm import backref, relationship
 
 class Object(Base):
@@ -45,16 +46,23 @@ class Link(Object):
     
     __tablename__ = 'Link'
     
+    __mapper_args__ = {
+        'polymorphic_identity': 'Link',
+    }
+    
     properties = (
         'name',
         'source', 
         'destination',
-        'cost'
+        'cost',
+        'flowSD',
+        'flowDS',
         )
 
     id = Column(Integer, ForeignKey('Object.id'), primary_key=True)
     subtype = Column(String)
     cost = Column(Integer)
+    path = Column(MutableList.as_mutable(PickleType), default=[])
     flowSD = Column(Integer, default=0.)
     flowDS = Column(Integer, default=0.)
 
@@ -79,13 +87,7 @@ class Link(Object):
         primaryjoin = destination_id == Node.id,
         backref = backref('higher_edges', cascade="all, delete-orphan")
         )
-        
-    properties = OrderedDict([
-        ('source', 'Source'),
-        ('destination', 'Destination')
-        ])
 
-        
     def __init__(self, **kwargs):
         super(Link, self).__init__(**kwargs)
         self.cost = 1
@@ -93,6 +95,10 @@ class Link(Object):
 class Fiber(Link):
     
     __tablename__ = 'Fiber'
+    
+    __mapper_args__ = {
+        'polymorphic_identity': 'Fiber',
+    }
     
     id = Column(Integer, ForeignKey('Link.id'), primary_key=True)
     color = '#ff8247'
@@ -104,6 +110,10 @@ class Fiber(Link):
 class Traffic(Link):
     
     __tablename__ = 'Traffic'
+    
+    __mapper_args__ = {
+        'polymorphic_identity': 'Traffic',
+    }
     
     id = Column(Integer, ForeignKey('Link.id'), primary_key=True)
     color = '#902bec'

@@ -1,3 +1,4 @@
+from database import db
 import numpy as np
 from cvxopt import matrix, glpk, solvers
 from models import Node, Fiber, Traffic
@@ -17,8 +18,6 @@ class Solver:
         graph = {node: {} for node in Node.query.all()}
         for node in Node.query.all():
             for neighbor, fiber in node.adjacencies('fiber'):
-                # if node == neighbor:
-                    # continue
                 graph[node][neighbor] = getattr(fiber, 'cost')
         
         n = 2*len(Fiber.query.all())
@@ -34,10 +33,8 @@ class Solver:
         G = np.concatenate((id, -1*id), axis=0).tolist()  
 
         for traffic in Traffic.query.all():
-            # flow conservation: Ax = b
             A, b = [], []
             for node_r in graph:
-                print('aaa'*100, node_r, traffic.destination, node_r != traffic.destination)
                 if node_r != traffic.destination:
                     b.append(float(node_r == traffic.source))
                     row = []
@@ -51,27 +48,27 @@ class Solver:
                     A.append(row)
 
             A, G, b, c, h = map(matrix, (A, G, b, c, h))
-
             solsta, x = glpk.ilp(c, G.T, h, A.T, b)
             
             # update the resulting flow for each node
             cpt = 0
             resulting_graph = {node: {} for node in Node.query.all()}
-            for node in resulting_graph:
-                for neighbor in resulting_graph[node]:
+            for node in graph:
+                for neighbor in graph[node]:
                     resulting_graph[node][neighbor] = x[cpt]
                     cpt += 1
-                    
+            print(resulting_graph)
             # update the network physical links with the new flow value
             for fiber in Fiber.query.all():
                 src, dest = fiber.source, fiber.destination
-                fiber.flowSD = graph[src][dest]
-                fiber.flowDS = graph[dest][src]
-            
+                print(fiber, resulting_graph[src][dest], resulting_graph[dest][src])
+                fiber.flowSD = resulting_graph[src][dest]
+                fiber.flowDS = resulting_graph[dest][src]
+        db.session.commit()
         # traceback the shortest path with the flow
-        # curr_node, path_plink = s, []
-        # while curr_node != t:
-        #     for neighbor, adj_plink in self.graph[curr_node.id]['plink']:
+        curr_node, path_plink = traffic.source, []
+        # while curr_node != traffic.destination:
+        #     for neighbor, adj_plink in curr_node.adjacencies('fiber'):
         #         # if the flow leaving the current node is 1, we move
         #         # forward and replace the current node with its neighbor
         #         if adj_plink('flow', curr_node) == 1:
