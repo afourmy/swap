@@ -35,6 +35,12 @@ class Node(Object):
     def __init__(self, **kwargs):
         super(Node, self).__init__(**kwargs)
 
+    def adjacencies(self):
+        all_nodes = [x.source for x in self.higher_edges]
+        all_nodes.extend([x.destination for x in self.lower_edges])
+        return all_nodes
+        
+
 class Link(Object):
     
     __tablename__ = 'Link'
@@ -60,13 +66,13 @@ class Link(Object):
     source = relationship(
         Node,
         primaryjoin = source_id == Node.id,
-        backref = backref('source', cascade="all, delete-orphan")
+        backref = backref('lower_edges', cascade="all, delete-orphan")
         )
 
     destination = relationship(
         Node,
         primaryjoin = destination_id == Node.id,
-        backref = backref('destination', cascade="all, delete-orphan")
+        backref = backref('higher_edges', cascade="all, delete-orphan")
         )
         
     properties = OrderedDict([
