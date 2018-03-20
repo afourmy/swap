@@ -85,7 +85,8 @@ def algorithm(algorithm):
 
 @app.route('/path_<traffic_link>', methods=['POST'])
 def get_path(traffic_link):
-    return jsonify(traffic_link)
+    traffic = db.session.query(Traffic).filter_by(name=traffic_link).first()
+    return jsonify(traffic.path)
 
 if __name__ == '__main__':
     app.run(

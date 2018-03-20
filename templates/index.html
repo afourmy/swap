@@ -112,6 +112,7 @@
         }
 
       var polylines = [];
+      link_name_to_polyline = {};
       function clearLines(){
         for (i = 0; i < polylines.length; i++) {
           map.removeLayer(polylines[i]);
@@ -132,7 +133,7 @@
 
         polyline.addTo(map);
         polylines.push(polyline);
-        
+        link_name_to_polyline["{{ link.name }}"] = polyline;
         
         polyline.bindPopup("{% for property in properties %}\
         <b>{{ property|capitalize }}</b>: {{ properties[property] }}<br>\
@@ -159,7 +160,10 @@
             url: "/path_" + "{{ link.name }}",
             dataType: "json",
             success: function(data){
-              console.log(data);
+              for (i = 0; i < data.length; i++) {
+                console.log(link_name_to_polyline, data[i]);
+                link_name_to_polyline[data[i]].setStyle({color: 'red'});
+                }
             }
           });
         });

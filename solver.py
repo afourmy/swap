@@ -33,6 +33,7 @@ class Solver:
         G = np.concatenate((id, -1*id), axis=0).tolist()  
 
         for traffic in Traffic.query.all():
+            traffic.path.clear()
             A, b = [], []
             for node_r in graph:
                 if node_r != traffic.destination:
@@ -57,13 +58,13 @@ class Solver:
                 for neighbor in graph[node]:
                     resulting_graph[node][neighbor] = x[cpt]
                     cpt += 1
-            print(resulting_graph)
+
             # update the network physical links with the new flow value
             for fiber in Fiber.query.all():
                 src, dest = fiber.source, fiber.destination
-                print(fiber, resulting_graph[src][dest], resulting_graph[dest][src])
-                fiber.flowSD = resulting_graph[src][dest]
-                fiber.flowDS = resulting_graph[dest][src]
+                if resulting_graph[src][dest] or resulting_graph[dest][src]:
+                    traffic.path.append(fiber.name)
+            print(traffic.path)
         db.session.commit()
         # traceback the shortest path with the flow
         curr_node, path_plink = traffic.source, []
