@@ -57,6 +57,7 @@ class Solver:
                 if resulting_graph[src][dest] or resulting_graph[dest][src]:
                     traffic.path.append(fiber.name)
         db.session.commit()
+        return {}
 
     def graph_transformation(self):
         # in the new graph, each node corresponds to a traffic path
@@ -72,7 +73,7 @@ class Solver:
                             "source": traffic1.name,
                             "target": traffic2.name,
                             "name": name
-                        }
-                        nA, nB = tlA.name, tlB.name
-            visited.add(tlA)
-        return graph
+                        })
+            visited.add(traffic1)
+        print({'nodes': nodes, 'links': links})
+        return {'nodes': nodes, 'links': links}

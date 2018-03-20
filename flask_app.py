@@ -78,7 +78,7 @@ def index():
 
 @app.route('/<algorithm>', methods=['POST'])
 def algorithm(algorithm):
-    return jsonify(*getattr(solver, algorithm)())
+    return jsonify(getattr(solver, algorithm)())
 
 
 @app.route('/path_<traffic_link>', methods=['POST'])
