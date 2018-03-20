@@ -5,15 +5,24 @@ from models import Node, Fiber, Traffic
 class Solver:
 
     def shortest_path(self):
+        
+
+        # Solves the MILP: minimize c'*x
+        #         subject to G*x + s = h
+        #                     A*x = b
+        #                     s >= 0
+        #                     xi integer, forall i in I
 
         # self.reset_flow()
         graph = {node: {} for node in Node.query.all()}
         for node in Node.query.all():
             for neighbor, fiber in node.adjacencies('fiber'):
+                # if node == neighbor:
+                    # continue
                 graph[node][neighbor] = getattr(fiber, 'cost')
-
-        n = 2*len(Fiber.query.all())
         
+        n = 2*len(Fiber.query.all())
+
         c = []
         for node in graph:
             for neighbor, cost in graph[node].items():
@@ -28,6 +37,7 @@ class Solver:
             # flow conservation: Ax = b
             A, b = [], []
             for node_r in graph:
+                print('aaa'*100, node_r, traffic.destination, node_r != traffic.destination)
                 if node_r != traffic.destination:
                     b.append(float(node_r == traffic.source))
                     row = []
@@ -39,8 +49,9 @@ class Solver:
                                 else  0.
                             )
                     A.append(row)
-            
+
             A, G, b, c, h = map(matrix, (A, G, b, c, h))
+
             solsta, x = glpk.ilp(c, G.T, h, A.T, b)
             
             # update the resulting flow for each node
