@@ -55,8 +55,8 @@ class Link(Object):
     id = Column(Integer, ForeignKey('Object.id'), primary_key=True)
     subtype = Column(String)
     cost = Column(Integer)
-    flowSD = Column(Integer)
-    flowDS = Column(Integer)
+    flowSD = Column(Integer, default=0.)
+    flowDS = Column(Integer, default=0.)
 
     source_id = Column(
         Integer,
