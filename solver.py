@@ -57,3 +57,28 @@ class Solver:
                 if resulting_graph[src][dest] or resulting_graph[dest][src]:
                     traffic.path.append(fiber.name)
         db.session.commit()
+
+    def graph_transformation(self):
+        # in the new graph, each node corresponds to a traffic path
+        # we create one node per traffic physical link in the new view            
+        visited = set()
+        # tl stands for traffic physical link
+        for tlA in self.traffics.values():
+            for tlB in self.traffics.values():
+                if tlB not in visited and tlA != tlB:
+                    if set(tlA.path) & set(tlB.path):
+                        nA, nB = tlA.name, tlB.name
+                        name = '{} - {}'.format(nA, nB)
+                        graph_project.network.lf(
+                                source = graph_project.network.nf(
+                                                    name = nA,
+                                                    subtype = 'optical switch'
+                                                    ),
+                                destination = graph_project.network.nf(
+                                                    name = nB,
+                                                    subtype = 'optical switch'
+                                                    ),
+                                name = name
+                                )
+            visited.add(tlA)
+        return graph
