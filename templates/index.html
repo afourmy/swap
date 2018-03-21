@@ -113,10 +113,18 @@
         }
 
       var polylines = [];
-      link_name_to_polyline = {};
+          selectedLines = [];
+          link_name_to_polyline = {};
+
       function clearLines(){
         for (i = 0; i < polylines.length; i++) {
           map.removeLayer(polylines[i]);
+          }
+        }
+
+      function unselectLines(){
+        for (i = 0; i < selectedLines.length; i++) {
+          selectedLines[i].setStyle({color: '#245611'});
           }
         }
 
@@ -161,10 +169,12 @@
             url: "/path_" + "{{ link.name }}",
             dataType: "json",
             success: function(data){
+              unselectLines();
               for (i = 0; i < data.length; i++) {
-                console.log(link_name_to_polyline, data[i]);
-                link_name_to_polyline[data[i]].setStyle({color: 'red'});
-                }
+                polyline = link_name_to_polyline[data[i]];
+                selectedLines.push(polyline);
+                polyline.setStyle({color: 'red'});
+              }
             }
           });
         });
