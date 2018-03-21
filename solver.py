@@ -66,7 +66,8 @@ class Solver:
         for idx, traffic in enumerate(Traffic.query.all()):
             nodes.append({
                 "id": traffic.name,
-                "img": "https://github.com/favicon.ico"
+                "name": traffic.name,
+                "img": "https://github.com/favicon.ico",
             })
             node_to_node_id[traffic.name] = idx
         visited, links = set(), []

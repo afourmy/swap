@@ -31,8 +31,9 @@
     stroke-width: 1.5px;
   }
   
-  .node .selected {
-    stroke: black;
+  .node text {
+    pointer-events: none;
+    font: 10px sans-serif;
   }
   
   </style>
@@ -58,7 +59,7 @@
         <div class="panel-heading">RWA solver</div>
         <div class="panel-body">
           <div class="btn-group-vertical btn-block" >
-            <button type="button" class="btn btn-primary" onclick="RWA('shortest_path')">Routing</button>
+            <button type="button" class="btn btn-primary" onclick="routing()">Routing</button>
             <button type="button" class="btn btn-primary" onclick="RWA('graph_transformation')">Transformed graph</button>
             <button type="button" class="btn btn-primary" onclick="RWA('wavelength_assignment')">Wavelength Assignment</button>
           </div>
@@ -101,6 +102,15 @@
           .attr("width", width)
           .attr("height", height);
 
+      function routing(){
+        $.ajax({
+          type: "POST",
+          url: "/shortest_path",
+          dataType: "json",
+          success: function(graph) {}
+        });
+      }
+
       function RWA(algorithm){
         $.ajax({
           type: "POST",
@@ -126,6 +136,11 @@
             .enter().append("circle")
               .attr("class", "node")
               .attr("r", 4.5);
+              
+            node.append("text")
+              .attr("dx", 12)
+              .attr("dy", ".35em")
+              .text(function(d) { return d.name });
             
             function tick() {
               link.attr("x1", function(d) { return d.source.x; })
