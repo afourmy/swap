@@ -61,8 +61,14 @@ class Solver:
 
     def graph_transformation(self):
         # in the new graph, each node corresponds to a traffic path
-        # we create one node per traffic physical link in the new view 
-        nodes = [{"id": traffic.name} for traffic in Traffic.query.all()]   
+        # we create one node per traffic physical link in the new view
+        nodes, node_to_node_id = [], {}
+        for idx, traffic in enumerate(Traffic.query.all()):
+            nodes.append({
+                "id": traffic.name,
+                "img": "https://github.com/favicon.ico"
+            })
+            node_to_node_id[traffic.name] = idx
         visited, links = set(), []
         for traffic1 in Traffic.query.all():
             for traffic2 in Traffic.query.all():
@@ -70,10 +76,9 @@ class Solver:
                     if set(traffic1.path) & set(traffic2.path):
                         name = '{} - {}'.format(traffic1.name, traffic2.name)
                         links.append({
-                            "source": traffic1.name,
-                            "target": traffic2.name,
+                            "source": node_to_node_id[traffic1.name],
+                            "target": node_to_node_id[traffic2.name],
                             "name": name
                         })
             visited.add(traffic1)
-        print({'nodes': nodes, 'links': links})
         return {'nodes': nodes, 'links': links}

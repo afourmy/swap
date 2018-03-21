@@ -78,6 +78,7 @@ def index():
 
 @app.route('/<algorithm>', methods=['POST'])
 def algorithm(algorithm):
+    print('test'*100)
     return jsonify(getattr(solver, algorithm)())
 
 
