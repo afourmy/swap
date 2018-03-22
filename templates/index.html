@@ -16,8 +16,8 @@
   <script src="{{ url_for('static', filename='leaflet/leaflet.js') }}"></script>
   <!-- Leaflet Polyline -->
   <script src="{{ url_for('static', filename='leaflet-polyline/leaflet.polyline.js') }}"></script>
-  <!-- Leaflet Polyline -->
-  <script src="{{ url_for('static', filename='d3/d3.v3.min.js') }}"></script>
+  <!-- Vis -->
+  <script src="{{ url_for('static', filename='') }}"></script>
 
   </head>
   <style>
@@ -94,13 +94,6 @@
       document.getElementById("file").onchange = function() {
         $("#fileform").submit();
       };
-      
-      var width = 500,
-          height = 400;
-      
-      var svg = d3.select("#transformed-graph").append("svg")
-          .attr("width", width)
-          .attr("height", height);
 
       function routing(){
         $.ajax({
