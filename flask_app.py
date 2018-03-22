@@ -51,7 +51,6 @@ def index():
             for obj_type, cls in object_class.items():
                 try:
                     sheet = book.sheet_by_name(obj_type)
-                # if the sheet cannot be found, there's nothing to import
                 except XLRDError:
                     continue
                 properties = sheet.row_values(0)
@@ -70,10 +69,7 @@ def index():
         }
         for obj_type, cls in object_class.items()
     }
-    return render_template(
-        'index.html',
-        objects=objects
-    )
+    return render_template('index.html', objects=objects)
 
 
 @app.route('/graph_transformation', methods=['POST'])
