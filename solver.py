@@ -104,21 +104,21 @@ class Solver:
         number_lambda = max(traffic_color.values()) + 1
         return {'lambda': number_lambda, 'colors': traffic_color}
 
-    def LP_RWA_formulation(self, K=10):
+    def linear_programming(self, K=10):
         # we note x_v_wl the variable that defines whether wl is used for 
         # the path v (x_v_wl = 1) or not (x_v_wl = 0)
         # we construct the vector of variable the following way:
         # x = [x_1_0, x_2_0, ..., x_V_0, x_1_1, ... x_V-1_K-1, x_V_K-1]
         # that is, [(x_v_0) for v in V, ..., (x_v_K) for wl in K]
-        
+
         # V is the total number of path (i.e the total number of physical links
         # in the transformed graph)
-        V, T = len(self.nodes), len(self.plinks)
-        
+        V, T = len(Node.query.all()), len(Fiber.query.all())
+        print(V, K)
         # for the objective function, which must minimize the sum of y_wl, 
         # that is, the number of wavelength used
         c = np.concatenate([np.zeros(V * K), np.ones(K)])
-        
+
         # for a given path v, we must have sum(x_v_wl for wl in K) = 1
         # which ensures that each optical path uses only one wavelength
         # for each path v, we must create a vector with all x_v_wl set to 1
@@ -128,9 +128,9 @@ class Solver:
             row = [float(K * path <= i < K * (path + 1)) for i in range(V * K)] 
             row += [0.] * K
             A.append(row)
-            
+
         b = np.ones(V)
-        
+
         G2 = []
         for i in range(K):
             for plink in self.plinks.values():
@@ -142,12 +142,8 @@ class Solver:
                 # vector of x_v_wl: we set x_v_src_i and x_v_dest_i to 1
                 for path in self.nodes.values():
                     for j in range(K):
-                        row.append(float(
-                                         (path == p_src or path == p_dest)
-                                                        and
-                                                       i == j
-                                         )
-                                   )
+                        row.append(
+                            float((path == p_src or path == p_dest) and i == j))
                 # we continue filling the vector with the y_wl
                 # we want to have x_v_src_i + x_v_dest_i - y_i <= 0
                 # hence the 'minus' sign instead of float
@@ -161,29 +157,17 @@ class Solver:
         # in [0, K-1]. We can rewrite it y_(wl + 1) - y_wl <= 0
         G3 = []
         for i in range(1, K):
-            row_wl = [float(
-                            (i == wl)
-                                or 
-                            -(i == wl + 1)
-                            )
-                        for wl in range(K)
-                      ]
+            row_wl = [float((i == wl) or -(i == wl + 1)) for wl in range(K)]
             final_row = np.concatenate([np.zeros(V * K), row_wl])
             G3.append(final_row)
         # G3 size should be K - 1 (rows) x K * (V + 1) (columns)
 
-        h = np.concatenate([
-                            # x_v_src_i + x_v_dest_i - y_i <= 0
-                            np.zeros(K * T),
-                            # y_(wl + 1) - y_wl <= 0
-                            np.zeros(K - 1)
-                            ])
-
+        # x_v_src_i + x_v_dest_i - y_i <= 0 and y_(wl + 1) - y_wl <= 0
+        h = np.concatenate([np.zeros(K * T), np.zeros(K - 1)])
         G = np.concatenate((G2, G3), axis=0).tolist()
         A, G, b, c, h = map(matrix, (A, G, b, c, h))
-    
         binvar = set(range(K * (V + 1)))
         solsta, x = glpk.ilp(c, G.T, h, A.T, b, B=binvar)
-        
-        warnings.warn(str(int(sum(x[-K:]))))
-        return int(sum(x[-K:]))
+
+        print('ttt'*100, int(sum(x[-K:])))
+        #return int(sum(x[-K:]))
