@@ -21,24 +21,26 @@
   <!-- Vis -->
   <script src="{{ url_for('static', filename='vis/vis.js') }}"></script>
   </head>
-  <style>
-
-  .link {
-    stroke: #000;
-  }
+  <div id="graph-transformation" class="modal fade bs-example-modal-lg" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg" style="width: 400px; height:300px;">
+      <div class="modal-content">
   
-  .node {
-    stroke: #fff;
-    stroke-width: 1.5px;
-  }
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span>
+          </button>
+          <h4 class="modal-title" id="myModalLabel">Transformed graph</h4>
+        </div>
+        <div class="modal-body">
+          <div id="network" style="height:300px; width:400px;"></div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
   
-  .node text {
-    pointer-events: none;
-    font: 10px sans-serif;
-  }
-  
-  </style>
-    <body>  
+      </div>
+    </div>
+  </div>
+  <body>
     <form id="aform" method="post">
       <div class="btn-group" style="z-index:500; position: absolute; left:40vw; top:10px;">  
         <div class="btn-group">
@@ -51,7 +53,7 @@
             <li><a onclick="switch_layer('nasa')"> NASA </a></li>
           </ul>
         </div> 
-  
+
         <strong><p class="btn btn-danger score" style="min-width:100px;" id="score">Score</p></strong>
       </div>
     </form>
@@ -67,7 +69,7 @@
         </div>
       </div>
     </div>
-  
+
     <div class="panel-group" style="z-index:500; position: absolute; top: 20px; right:20px;">
       <form id="fileform" class="form-horizontal form-label-left" enctype="multipart/form-data" method="post" >
         <div style="padding-bottom:5px;">
@@ -79,17 +81,8 @@
     </div>
 
     <div id="map">
-    <div id="graph-transformation" class="modal fade bs-example-modal-lg" tabindex="-1" role="dialog" aria-hidden="true">
-      <div class="modal-dialog modal-lg">
-        <div id="network" style="height: 500px"></div>
 
-        </div>
-      </div>
-    </div>
-    
-  <script>
 
-    </script>
     <script>
 
       document.getElementById("file").onchange = function() {
@@ -111,44 +104,15 @@
           url: "/" + algorithm,
           dataType: "json",
           success: function(graph){
-
-              // create an array with nodes
-              var nodes = new vis.DataSet([
-                {% for node, properties in node_table.items() %}  
-                  {
-                    id: {{ node.id }}, 
-                    label: '{{ node[labels['node']] }}', 
-                    image: 'static/images/default/{{ node.subtype }}.gif', 
-                    shape: 'image', 
-                    title: "{% for property in properties %}\
-                    <b>{{names[property]}}</b>: {{ node[property] }}<br>{% endfor %}"
-                  },
-                {% endfor %}
-                ]);
-            
-              // create an array with edges
-              var edges = new vis.DataSet([
-                {% for link, properties in link_table.items() %}  
-                  { 
-                    from: {{ link['source']['id'] }}, 
-                    to: {{ link['destination']['id'] }}, 
-                    label: '{{ link[labels['link']] }}',
-                    color: {color: '{{ link.color }}'},
-                  },
-                {% endfor %}
-                ]);
-
-              // create a network
-              const container = $("#network");
-              
-              var data = {
-                nodes: nodes,
-                edges: edges
-                };
-              var options = {};
-              const network = new vis.Network(container[0], data, options);
-              makeMeMultiSelect(container, network, nodes);
             $('#graph-transformation').modal('show');
+            var nodes = new vis.DataSet(graph['nodes']);
+            //var edges = new vis.DataSet([graph['links']]);
+            const container = $("#network");
+            var data = {nodes: nodes}//, edges: edges};
+            var options = {};
+            const network = new vis.Network(container[0], data, options);
+            
+            //network.fit()
           }
         });
       }

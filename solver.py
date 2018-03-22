@@ -65,7 +65,7 @@ class Solver:
         nodes, node_to_node_id = [], {}
         for idx, traffic in enumerate(Traffic.query.all()):
             nodes.append({
-                "id": traffic.name,
+                "id": idx,
                 "name": traffic.name,
                 "img": "https://github.com/favicon.ico",
             })
@@ -77,8 +77,8 @@ class Solver:
                     if set(traffic1.path) & set(traffic2.path):
                         name = '{} - {}'.format(traffic1.name, traffic2.name)
                         links.append({
-                            "source": node_to_node_id[traffic1.name],
-                            "target": node_to_node_id[traffic2.name],
+                            "from": node_to_node_id[traffic1.name],
+                            "to": node_to_node_id[traffic2.name],
                             "name": name
                         })
             visited.add(traffic1)
