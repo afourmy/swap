@@ -125,7 +125,7 @@
       map.addLayer(osm_layer);
       var current_layer = osm_layer;
     
-      var icon_city = L.icon({
+      var icon_switch = L.icon({
         iconUrl: 'static/images/optical_switch.gif',
         iconSize: [20, 20], // size of the icon
         iconAnchor: [9, 6], // point of the icon which will correspond to marker's location
@@ -133,17 +133,12 @@
         });
     
       {% for properties in objects['Node'].values() %}  
-        var marker = L.marker([
-          {{ properties['latitude'] }}, 
-          {{ properties['longitude'] }}], 
-          );
-        
+        var marker = L.marker([{{ properties['latitude'] }}, {{ properties['longitude'] }}]);
         marker.bindPopup("{% for property in properties %}\
         <b>{{ property|capitalize }}</b>: {{ properties[property] }}<br>\
         {% endfor %}<br>");
-        
         marker.bindTooltip("{{ properties['name'] }}", {permanent: false, });
-        marker.setIcon(icon_city), 
+        marker.setIcon(icon_switch), 
         marker.addTo(map);
       {% endfor %}
       
@@ -160,14 +155,14 @@
       function clearLines(){
         for (i = 0; i < polylines.length; i++) {
           map.removeLayer(polylines[i]);
-          }
         }
+      }
 
       function unselectLines(){
         for (i = 0; i < selectedLines.length; i++) {
           selectedLines[i].setStyle({color: '#245611'});
-          }
         }
+      }
 
       {% for link, properties in objects['Fiber'].items() %}
         var pointA = new L.LatLng({{ link['source']['latitude'] }}, {{ link['source']['longitude'] }});
