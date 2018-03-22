@@ -33,7 +33,7 @@
           <div id="network" style="height:400px; width:600px;"></div>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-default" onclick="largest_degree_first()">Largest degree first</button>
+          <button type="button" class="btn btn-default" onclick="wavelengthAssignment('largest_degree_first')">Largest degree first</button>
           <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
         </div>
       </div>
@@ -62,8 +62,7 @@
         <div class="panel-body">
           <div class="btn-group-vertical btn-block" >
             <button type="button" class="btn btn-primary" onclick="routing()">Routing</button>
-            <button type="button" class="btn btn-primary" onclick="RWA('graph_transformation')">Transformed graph</button>
-            <button type="button" class="btn btn-primary" onclick="RWA('wavelength_assignment')">Wavelength Assignment</button>
+            <button type="button" class="btn btn-primary" onclick="graphTransformation()">Transform graph</button>
           </div>
         </div>
       </div>
@@ -97,10 +96,10 @@
 
       var colors = ['red', '#08f', '#0c0', '#f80'];
       var nodes = new vis.DataSet();
-      function largest_degree_first(){
+      function wavelengthAssignment(algorithm){
         $.ajax({
           type: "POST",
-          url: "/graph_coloring/largest_degree_first",
+          url: "/wavelength_assignment/" + algorithm,
           dataType: "json",
           success: function(results) {
             console.log(results);
@@ -174,10 +173,10 @@
         });
       }
 
-      function RWA(algorithm){
+      function graphTransformation(algorithm){
         $.ajax({
           type: "POST",
-          url: "/" + algorithm,
+          url: "/graph_transformation",
           dataType: "json",
           success: function(graph){
             $('#graph-transformation').modal('show');

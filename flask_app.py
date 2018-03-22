@@ -82,24 +82,20 @@ def graph_transformation():
     return jsonify(vis_graph)
 
 
-@app.route('/graph_coloring/<algorithm>', methods=['POST'])
+@app.route('/wavelength_assignment/<algorithm>', methods=['POST'])
 def graph_coloring(algorithm):
     results = getattr(solver, algorithm)(session['transformed_graph'])
     colors_per_fiber, coords = defaultdict(list), {}
     for traffic in Traffic.query.all():
         for fiber in Fiber.query.all():
-            start = (fiber.source.longitude, fiber.source.latitude)
-            end = (fiber.destination.longitude, fiber.destination.latitude)
             if fiber.name in traffic.path:
                 colors_per_fiber[fiber.name].append(results['colors'][traffic.name])
-                coords[fiber.name] = (start, end)
+                coords[fiber.name] = (
+                    (fiber.source.longitude, fiber.source.latitude),
+                    (fiber.destination.longitude, fiber.destination.latitude)
+                )
     results['fiber_colors'], results['coords'] = colors_per_fiber, coords
     return jsonify(results)
-
-
-@app.route('/<algorithm>', methods=['POST'])
-def algorithm(algorithm):
-    return jsonify(getattr(solver, algorithm)())
 
 
 @app.route('/path_<traffic_link>', methods=['POST'])
