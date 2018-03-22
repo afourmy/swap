@@ -104,15 +104,14 @@
           url: "/" + algorithm,
           dataType: "json",
           success: function(graph){
-            $('#graph-transformation').modal('show');
+            console.log(graph);
             var nodes = new vis.DataSet(graph['nodes']);
-            //var edges = new vis.DataSet([graph['links']]);
+            var edges = new vis.DataSet(graph['links']);
             const container = $("#network");
-            var data = {nodes: nodes}//, edges: edges};
+            var data = {nodes: nodes, edges: edges};
             var options = {};
             const network = new vis.Network(container[0], data, options);
-            
-            //network.fit()
+            $('#graph-transformation').modal('show');
           }
         });
       }
