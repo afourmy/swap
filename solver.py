@@ -89,10 +89,10 @@ class Solver:
         # we will use a dictionary that binds traffic to the color it uses.
         traffic_color = dict.fromkeys(Node.query.all(), None)
         # and a list that contains all vertices that we have yet to color
-        uncolored_nodes = list(optical_switch_color)
+        uncolored_nodes = list(traffic_color)
         # we will use a function that returns the degree of a node to sort
         # the list in ascending order
-        uncolored_nodes.sort(key=lambda node: len(node.adjacencies())
+        uncolored_nodes.sort(key=lambda node: len(list(node.adjacencies('fiber'))))
         # and pop nodes one by one
         while uncolored_nodes:
             largest_degree = uncolored_nodes.pop()
@@ -101,7 +101,7 @@ class Solver:
             # we find the minimum indexed color which is available
             min_index = [i in colors for i in range(len(colors) + 1)].index(0)
             # and assign it to the current optical switch
-            optical_switch_color[largest_degree] = min_index
+            traffic_color[largest_degree] = min_index
             
-        number_lambda = max(optical_switch_color.values()) + 1
+        number_lambda = max(traffic_color.values()) + 1
         return number_lambda

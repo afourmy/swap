@@ -33,6 +33,7 @@
           <div id="network" style="height:400px; width:600px;"></div>
         </div>
         <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal" onclick="largest_degree_first()">Largest degree first</button>
           <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
         </div>
       </div>
@@ -93,6 +94,17 @@
           url: "/shortest_path",
           dataType: "json",
           success: function(graph) {}
+        });
+      }
+
+      function largest_degree_first(){
+        $.ajax({
+          type: "POST",
+          url: "/largest_degree_first",
+          dataType: "json",
+          success: function(result) {
+            console.log(result);
+          }
         });
       }
 
@@ -232,14 +244,8 @@
               "type": "LineString",
               "coordinates": [
                 {% for fiber in objects['Fiber'].keys() %}
-                [
-                  {{ fiber['source']['longitude'] }},
-                  {{ fiber['source']['latitude'] }}
-                ],
-                [
-                  {{ fiber['destination']['longitude'] }},
-                  {{ fiber['destination']['latitude'] }}
-                ],
+                  [{{ fiber['source']['longitude'] }}, {{ fiber['source']['latitude'] }}],
+                  [{{ fiber['destination']['longitude'] }}, {{ fiber['destination']['latitude'] }}],
                 {% endfor %}
               ]
             }
