@@ -84,7 +84,6 @@ def graph_transformation():
 
 @app.route('/graph_coloring/<algorithm>', methods=['POST'])
 def graph_coloring(algorithm):
-    
     results = getattr(solver, algorithm)(session['transformed_graph'])
     colors_per_fiber, coords = defaultdict(list), {}
     for traffic in Traffic.query.all():
@@ -101,9 +100,6 @@ def graph_coloring(algorithm):
 @app.route('/<algorithm>', methods=['POST'])
 def algorithm(algorithm):
     return jsonify(getattr(solver, algorithm)())
-
-
-
 
 
 @app.route('/path_<traffic_link>', methods=['POST'])

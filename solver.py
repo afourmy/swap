@@ -63,8 +63,10 @@ class Solver:
         # in the new graph, each node corresponds to a traffic path
         # we create one node per traffic physical link in the new view
         transformed_graph = {t.name: [] for t in Traffic.query.all()}
-        nodes = [{"id": traffic.name, "label": traffic.name} for traffic
-                                    in Traffic.query.all()]
+        nodes = [{
+            "id": traffic.name,
+            "label": traffic.name
+        } for traffic in Traffic.query.all()]
         visited, links = set(), []
         for traffic1 in Traffic.query.all():
             for traffic2 in Traffic.query.all():
