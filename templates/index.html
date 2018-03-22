@@ -80,7 +80,7 @@
     <div id="map">
     <div id="graph-transformation" class="modal fade bs-example-modal-lg" tabindex="-1" role="dialog" aria-hidden="true">
       <div class="modal-dialog modal-lg">
-        <div class="modal-content" id="transformed-graph">
+        <div id="network" style="height: 500px"></div>
 
         </div>
       </div>
@@ -118,39 +118,42 @@
           dataType: "json",
           success: function(graph){
 
-            var force = d3.layout.force()
-                .nodes(graph.nodes)
-                .links(graph.links)
-                .size([width, height])
-                .charge(-200)
-                .on("tick", tick)
-                .start();
+              // create an array with nodes
+              var nodes = new vis.DataSet([
+                {% for node, properties in node_table.items() %}  
+                  {
+                    id: {{ node.id }}, 
+                    label: '{{ node[labels['node']] }}', 
+                    image: 'static/images/default/{{ node.subtype }}.gif', 
+                    shape: 'image', 
+                    title: "{% for property in properties %}\
+                    <b>{{names[property]}}</b>: {{ node[property] }}<br>{% endfor %}"
+                  },
+                {% endfor %}
+                ]);
             
-            var link = svg.selectAll(".link")
-              .data(graph.links)
-            .enter().append("line")
-              .attr("class", "link");
-            
-            var node = svg.selectAll(".node")
-              .data(graph.nodes)
-            .enter().append("circle")
-              .attr("class", "node")
-              .attr("r", 4.5);
+              // create an array with edges
+              var edges = new vis.DataSet([
+                {% for link, properties in link_table.items() %}  
+                  { 
+                    from: {{ link['source']['id'] }}, 
+                    to: {{ link['destination']['id'] }}, 
+                    label: '{{ link[labels['link']] }}',
+                    color: {color: '{{ link.color }}'},
+                  },
+                {% endfor %}
+                ]);
+
+              // create a network
+              const container = $("#network");
               
-            node.append("text")
-              .attr("dx", 12)
-              .attr("dy", ".35em")
-              .text(function(d) { return d.name });
-            
-            function tick() {
-              link.attr("x1", function(d) { return d.source.x; })
-                  .attr("y1", function(d) { return d.source.y; })
-                  .attr("x2", function(d) { return d.target.x; })
-                  .attr("y2", function(d) { return d.target.y; });
-            
-              node.attr("cx", function(d) { return d.x; })
-                  .attr("cy", function(d) { return d.y; });
-            }
+              var data = {
+                nodes: nodes,
+                edges: edges
+                };
+              var options = {};
+              const network = new vis.Network(container[0], data, options);
+              makeMeMultiSelect(container, network, nodes);
             $('#graph-transformation').modal('show');
           }
         });
