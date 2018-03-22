@@ -66,9 +66,7 @@ class Solver:
         for idx, traffic in enumerate(Traffic.query.all()):
             nodes.append({
                 "id": traffic.name,
-                "name": traffic.name,
-                "shape": "image",
-                "image": "static/images/traffic_icon.png",
+                "label": traffic.name
             })
             node_to_node_id[traffic.name] = idx
         visited, links = set(), []
@@ -76,11 +74,6 @@ class Solver:
             for traffic2 in Traffic.query.all():
                 if traffic2 not in visited and traffic1 != traffic2:
                     if set(traffic1.path) & set(traffic2.path):
-                        name = '{} - {}'.format(traffic1.name, traffic2.name)
-                        links.append({
-                            "from": traffic1.name,
-                            "to": traffic2.name,
-                            "name": name
-                        })
+                        links.append({"from": traffic1.name, "to": traffic2.name})
             visited.add(traffic1)
         return {'nodes': nodes, 'links': links}
