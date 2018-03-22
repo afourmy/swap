@@ -108,26 +108,26 @@
             for (const [key, value] of Object.entries(results['colors'])) {
               console.log(key, colors[value]);
               nodes.update({id: key, color: colors[value]});
-              {% for fiber in objects['Fiber'].keys() %}
+              }
+            for (const [key, value] of Object.entries(results['fiber_colors'])) {
               var geoJson = {
                 "type": "FeatureCollection",
                 "features": [
                   {
                     "type": "Feature",
                     "properties": {
-                      "lines": [0]
+                      "lines": value
                     },
                     "geometry": {
                       "type": "LineString",
                       "coordinates": [
-                        [{{ fiber['source']['longitude'] }}, {{ fiber['source']['latitude'] }}],
-                        [{{ fiber['destination']['longitude'] }}, {{ fiber['destination']['latitude'] }}],
+                        [...results['coords'][key][0]], [...results['coords'][key][1]],
                       ]
                     }
                   },
                 ]
               };
-        
+            
               var lineWeight = 6;
 
               // manage overlays in groups to ease superposition order
@@ -135,29 +135,25 @@
               var lineBg = L.layerGroup();
               var busLines = L.layerGroup();
               var busStops = L.layerGroup();
-        
-              var ends = [];
 
-        
               var lineSegment, linesOnSegment, segmentCoords, segmentWidth;
               geoJson.features.forEach(function(lineSegment) {
                 segmentCoords = L.GeoJSON.coordsToLatLngs(lineSegment.geometry.coordinates, 0);
-        
                 linesOnSegment = lineSegment.properties.lines;
                 segmentWidth = linesOnSegment.length * (lineWeight + 1);
-        
+
                 L.polyline(segmentCoords, {
                   color: '#000',
                   weight: segmentWidth + 5,
                   opacity: 1
                 }).addTo(outlines);
-        
+
                 L.polyline(segmentCoords, {
                   color: '#fff',
                   weight: segmentWidth + 3,
                   opacity: 1
                 }).addTo(lineBg);
-        
+
                 for(var j=0;j<linesOnSegment.length;j++) {
                   L.polyline(segmentCoords, {
                     color: colors[linesOnSegment[j]],
@@ -167,14 +163,12 @@
                   }).addTo(busLines);
                 }
               });
-        
 
-        
               outlines.addTo(map);
               lineBg.addTo(map);
               busLines.addTo(map);
               busStops.addTo(map);
-{% endfor %}
+
             }
           }
         });

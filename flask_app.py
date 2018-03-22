@@ -86,12 +86,15 @@ def graph_transformation():
 def graph_coloring(algorithm):
     
     results = getattr(solver, algorithm)(session['transformed_graph'])
-    colors_per_fiber = defaultdict(list)
+    colors_per_fiber, coords = defaultdict(list), {}
     for traffic in Traffic.query.all():
         for fiber in Fiber.query.all():
+            start = (fiber.source.longitude, fiber.source.latitude)
+            end = (fiber.destination.longitude, fiber.destination.latitude)
             if fiber.name in traffic.path:
                 colors_per_fiber[fiber.name].append(results['colors'][traffic.name])
-    results['fiber_colors'] = colors_per_fiber
+                coords[fiber.name] = (start, end)
+    results['fiber_colors'], results['coords'] = colors_per_fiber, coords
     return jsonify(results)
 
 
