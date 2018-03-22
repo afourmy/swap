@@ -33,7 +33,7 @@
           <div id="network" style="height:400px; width:600px;"></div>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-default" data-dismiss="modal" onclick="largest_degree_first()">Largest degree first</button>
+          <button type="button" class="btn btn-default" onclick="largest_degree_first()">Largest degree first</button>
           <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
         </div>
       </div>
@@ -81,9 +81,7 @@
 
     <div id="map">
 
-
     <script>
-
       document.getElementById("file").onchange = function() {
         $("#fileform").submit();
       };
@@ -97,13 +95,106 @@
         });
       }
 
+      var colors = ['red', '#08f', '#0c0', '#f80'];
+      var nodes = new vis.DataSet();
       function largest_degree_first(){
         $.ajax({
           type: "POST",
-          url: "/largest_degree_first",
+          url: "/graph_coloring/largest_degree_first",
           dataType: "json",
-          success: function(result) {
-            console.log(result);
+          success: function(result, trafficColors, colorsPerFibers) {
+            console.log(result, trafficColors, colorsPerFibers);
+            clearLines();
+            for (const [key, value] of Object.entries(trafficColors)) {
+              nodes.update({id: key, color: colors[value]});
+              {% for fiber in objects['Fiber'].keys() %}
+              var geoJson = {
+                "type": "FeatureCollection",
+                "features": [
+                  {
+                    "type": "Feature",
+                    "properties": {
+                      "lines": [0]
+                    },
+                    "geometry": {
+                      "type": "LineString",
+                      "coordinates": [
+                        [{{ fiber['source']['longitude'] }}, {{ fiber['source']['latitude'] }}],
+                        [{{ fiber['destination']['longitude'] }}, {{ fiber['destination']['latitude'] }}],
+                      ]
+                    }
+                  },
+                ]
+              };
+        
+              var lineWeight = 6;
+        
+        
+              // manage overlays in groups to ease superposition order
+              var outlines = L.layerGroup();
+              var lineBg = L.layerGroup();
+              var busLines = L.layerGroup();
+              var busStops = L.layerGroup();
+        
+              var ends = [];
+              function addStop(ll) {
+                for(var i=0, found=false; i<ends.length && !found; i++) {
+                  found = (ends[i].lat == ll.lat && ends[i].lng == ll.lng);
+                }
+                if(!found) {
+                  ends.push(ll);
+                }
+              }
+        
+              var lineSegment, linesOnSegment, segmentCoords, segmentWidth;
+              geoJson.features.forEach(function(lineSegment) {
+                segmentCoords = L.GeoJSON.coordsToLatLngs(lineSegment.geometry.coordinates, 0);
+        
+                linesOnSegment = lineSegment.properties.lines;
+                segmentWidth = linesOnSegment.length * (lineWeight + 1);
+        
+                L.polyline(segmentCoords, {
+                  color: '#000',
+                  weight: segmentWidth + 5,
+                  opacity: 1
+                }).addTo(outlines);
+        
+                L.polyline(segmentCoords, {
+                  color: '#fff',
+                  weight: segmentWidth + 3,
+                  opacity: 1
+                }).addTo(lineBg);
+        
+                for(var j=0;j<linesOnSegment.length;j++) {
+                  L.polyline(segmentCoords, {
+                    color: colors[linesOnSegment[j]],
+                    weight: lineWeight,
+                    opacity: 1,
+                    offset: j * (lineWeight + 1) - (segmentWidth / 2) + ((lineWeight + 1) / 2)
+                  }).addTo(busLines);
+                }
+        
+                addStop(segmentCoords[0]);
+                addStop(segmentCoords[segmentCoords.length - 1]);
+              });
+        
+              ends.forEach(function(endCoords) {
+                L.circleMarker(endCoords, {
+                  color: '#000',
+                  fillColor: '#ccc',
+                  fillOpacity: 1,
+                  radius: 10,
+                  weight: 4,
+                  opacity: 1
+                }).addTo(busStops);
+              });
+        {% endfor %}
+              outlines.addTo(map);
+              lineBg.addTo(map);
+              busLines.addTo(map);
+              busStops.addTo(map);
+
+            }
           }
         });
       }
@@ -115,13 +206,12 @@
           dataType: "json",
           success: function(graph){
             $('#graph-transformation').modal('show');
-            var nodes = new vis.DataSet(graph['nodes']);
+            nodes.add(graph['nodes']);
             var edges = new vis.DataSet(graph['links']);
             const container = $("#network");
             var data = {nodes: nodes, edges: edges};
             var options = {};
             const network = new vis.Network(container[0], data, options);
-            
           }
         });
       }
@@ -231,95 +321,6 @@
         <b>{{ property|capitalize }}</b>: {{ properties[property] }}<br>\
         {% endfor %}<br>");
       {% endfor %}
-      /*
-      var geoJson = {
-        "type": "FeatureCollection",
-        "features": [
-          {
-            "type": "Feature",
-            "properties": {
-              "lines": [2, 3]
-            },
-            "geometry": {
-              "type": "LineString",
-              "coordinates": [
-                {% for fiber in objects['Fiber'].keys() %}
-                  [{{ fiber['source']['longitude'] }}, {{ fiber['source']['latitude'] }}],
-                  [{{ fiber['destination']['longitude'] }}, {{ fiber['destination']['latitude'] }}],
-                {% endfor %}
-              ]
-            }
-          },
-        ]
-      };
-
-      var lineWeight = 6;
-      var lineColors = ['red', '#08f', '#0c0', '#f80'];
-
-      // manage overlays in groups to ease superposition order
-      var outlines = L.layerGroup();
-      var lineBg = L.layerGroup();
-      var busLines = L.layerGroup();
-      var busStops = L.layerGroup();
-
-      var ends = [];
-      function addStop(ll) {
-        for(var i=0, found=false; i<ends.length && !found; i++) {
-          found = (ends[i].lat == ll.lat && ends[i].lng == ll.lng);
-        }
-        if(!found) {
-          ends.push(ll);
-        }
-      }
-
-      var lineSegment, linesOnSegment, segmentCoords, segmentWidth;
-      geoJson.features.forEach(function(lineSegment) {
-        segmentCoords = L.GeoJSON.coordsToLatLngs(lineSegment.geometry.coordinates, 0);
-
-        linesOnSegment = lineSegment.properties.lines;
-        segmentWidth = linesOnSegment.length * (lineWeight + 1);
-
-        L.polyline(segmentCoords, {
-          color: '#000',
-          weight: segmentWidth + 5,
-          opacity: 1
-        }).addTo(outlines);
-
-        L.polyline(segmentCoords, {
-          color: '#fff',
-          weight: segmentWidth + 3,
-          opacity: 1
-        }).addTo(lineBg);
-
-        for(var j=0;j<linesOnSegment.length;j++) {
-          L.polyline(segmentCoords, {
-            color: lineColors[linesOnSegment[j]],
-            weight: lineWeight,
-            opacity: 1,
-            offset: j * (lineWeight + 1) - (segmentWidth / 2) + ((lineWeight + 1) / 2)
-          }).addTo(busLines);
-        }
-
-        addStop(segmentCoords[0]);
-        addStop(segmentCoords[segmentCoords.length - 1]);
-      });
-
-      ends.forEach(function(endCoords) {
-        L.circleMarker(endCoords, {
-          color: '#000',
-          fillColor: '#ccc',
-          fillOpacity: 1,
-          radius: 10,
-          weight: 4,
-          opacity: 1
-        }).addTo(busStops);
-      });
-
-      outlines.addTo(map);
-      lineBg.addTo(map);
-      busLines.addTo(map);
-      busStops.addTo(map);
-      */
     </script>
   </body>
 </html>

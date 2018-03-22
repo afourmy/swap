@@ -1,5 +1,5 @@
-from collections import OrderedDict
-from flask import Flask, jsonify, render_template, request
+from collections import defaultdict, OrderedDict
+from flask import Flask, jsonify, render_template, request, session
 from os.path import abspath, dirname
 from sys import dont_write_bytecode, path
 from werkzeug.utils import secure_filename
@@ -13,7 +13,7 @@ if path_app not in path:
 
 from solver import Solver
 from database import db, create_database
-from models import object_class, object_factory, Traffic
+from models import Fiber, object_class, object_factory, Traffic
 
 
 def configure_database(app):
@@ -76,9 +76,30 @@ def index():
     )
 
 
+@app.route('/graph_transformation', methods=['POST'])
+def graph_transformation():
+    session['transformed_graph'], vis_graph = solver.graph_transformation()
+    return jsonify(vis_graph)
+
+
+@app.route('/graph_coloring/<algorithm>', methods=['POST'])
+def graph_coloring(algorithm):
+    
+    result, colors = getattr(solver, algorithm)(session['transformed_graph'])
+    colors_per_fiber = defaultdict(list)
+    for traffic in Traffic.query.all():
+        for fiber in Fiber.query.all():
+            if fiber.name in traffic.path:
+                colors_per_fiber[fiber.name].append(colors[traffic.name])
+    return jsonify(result, colors, colors_per_fiber)
+
+
 @app.route('/<algorithm>', methods=['POST'])
 def algorithm(algorithm):
     return jsonify(getattr(solver, algorithm)())
+
+
+
 
 
 @app.route('/path_<traffic_link>', methods=['POST'])
