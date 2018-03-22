@@ -100,4 +100,4 @@ class Solver:
             # and assign it to the current optical switch
             traffic_color[largest_degree] = min_index
         number_lambda = max(traffic_color.values()) + 1
-        return number_lambda, traffic_color
+        return {'lambda': number_lambda, 'colors': traffic_color}

@@ -85,13 +85,14 @@ def graph_transformation():
 @app.route('/graph_coloring/<algorithm>', methods=['POST'])
 def graph_coloring(algorithm):
     
-    result, colors = getattr(solver, algorithm)(session['transformed_graph'])
+    results = getattr(solver, algorithm)(session['transformed_graph'])
     colors_per_fiber = defaultdict(list)
     for traffic in Traffic.query.all():
         for fiber in Fiber.query.all():
             if fiber.name in traffic.path:
-                colors_per_fiber[fiber.name].append(colors[traffic.name])
-    return jsonify(result, colors, colors_per_fiber)
+                colors_per_fiber[fiber.name].append(results['colors'][traffic.name])
+    results['fiber_colors'] = colors_per_fiber
+    return jsonify(results)
 
 
 @app.route('/<algorithm>', methods=['POST'])

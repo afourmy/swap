@@ -102,10 +102,11 @@
           type: "POST",
           url: "/graph_coloring/largest_degree_first",
           dataType: "json",
-          success: function(result, trafficColors, colorsPerFibers) {
-            console.log(result, trafficColors, colorsPerFibers);
+          success: function(results) {
+            console.log(results);
             clearLines();
-            for (const [key, value] of Object.entries(trafficColors)) {
+            for (const [key, value] of Object.entries(results['colors'])) {
+              console.log(key, colors[value]);
               nodes.update({id: key, color: colors[value]});
               {% for fiber in objects['Fiber'].keys() %}
               var geoJson = {
@@ -128,8 +129,7 @@
               };
         
               var lineWeight = 6;
-        
-        
+
               // manage overlays in groups to ease superposition order
               var outlines = L.layerGroup();
               var lineBg = L.layerGroup();
@@ -137,14 +137,7 @@
               var busStops = L.layerGroup();
         
               var ends = [];
-              function addStop(ll) {
-                for(var i=0, found=false; i<ends.length && !found; i++) {
-                  found = (ends[i].lat == ll.lat && ends[i].lng == ll.lng);
-                }
-                if(!found) {
-                  ends.push(ll);
-                }
-              }
+
         
               var lineSegment, linesOnSegment, segmentCoords, segmentWidth;
               geoJson.features.forEach(function(lineSegment) {
@@ -173,27 +166,15 @@
                     offset: j * (lineWeight + 1) - (segmentWidth / 2) + ((lineWeight + 1) / 2)
                   }).addTo(busLines);
                 }
-        
-                addStop(segmentCoords[0]);
-                addStop(segmentCoords[segmentCoords.length - 1]);
               });
         
-              ends.forEach(function(endCoords) {
-                L.circleMarker(endCoords, {
-                  color: '#000',
-                  fillColor: '#ccc',
-                  fillOpacity: 1,
-                  radius: 10,
-                  weight: 4,
-                  opacity: 1
-                }).addTo(busStops);
-              });
-        {% endfor %}
+
+        
               outlines.addTo(map);
               lineBg.addTo(map);
               busLines.addTo(map);
               busStops.addTo(map);
-
+{% endfor %}
             }
           }
         });
