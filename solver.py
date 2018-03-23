@@ -12,14 +12,14 @@ class Solver:
         graph = {node: {} for node in Node.query.all()}
         for node in Node.query.all():
             for neighbor, fiber in node.adjacencies('fiber'):
-                graph[node][neighbor] = getattr(fiber, 'cost')
+                graph[node][neighbor] = fiber.distance
 
         n = 2*len(Fiber.query.all())
 
         c = []
         for node in graph:
-            for neighbor, cost in graph[node].items():
-                c.append(float(cost))
+            for neighbor, distance in graph[node].items():
+                c.append(float(distance))
 
         # for the condition 0 < x_ij < 1
         h = np.concatenate([np.ones(n), np.zeros(n)])
@@ -27,7 +27,6 @@ class Solver:
         G = np.concatenate((id, -1*id), axis=0).tolist()
 
         for traffic in Traffic.query.all():
-            traffic.path.clear()
             A, b = [], []
             for node_r in graph:
                 if node_r != traffic.destination:
@@ -60,7 +59,7 @@ class Solver:
                     traffic_paths[traffic.name].append(fiber.name)
         return traffic_paths
 
-    def graph_transformation(self):
+    def graph_transformation(self, paths):
         # in the new graph, each node corresponds to a traffic path
         # we create one node per traffic physical link in the new view
         graph_nodes = {t.name: [] for t in Traffic.query.all()}
@@ -73,7 +72,7 @@ class Solver:
         for traffic1 in Traffic.query.all():
             for traffic2 in Traffic.query.all():
                 if traffic2 not in visited and traffic1 != traffic2:
-                    if set(traffic1.path) & set(traffic2.path):
+                    if set(paths[traffic1.name]) & set(paths[traffic2.name]):
                         graph_nodes[traffic1.name].append(traffic2.name)
                         graph_nodes[traffic2.name].append(traffic1.name)
                         graph_links.append((traffic1.name, traffic2.name))

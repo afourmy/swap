@@ -56,15 +56,12 @@ class Link(Object):
         'subtype',
         'source',
         'destination',
-        'cost',
+        'distance',
     )
 
     id = Column(Integer, ForeignKey('Object.id'), primary_key=True)
     subtype = Column(String)
-    cost = Column(Integer)
-    path = Column(MutableList.as_mutable(PickleType), default=[])
-    flowSD = Column(Integer, default=0.)
-    flowDS = Column(Integer, default=0.)
+    distance = Column(Integer)
 
     source_id = Column(
         Integer,
@@ -90,7 +87,7 @@ class Link(Object):
 
     def __init__(self, **kwargs):
         super(Link, self).__init__(**kwargs)
-        self.cost = 1
+        self.distance = 1
 
 
 class Fiber(Link):
@@ -102,7 +99,6 @@ class Fiber(Link):
     }
 
     id = Column(Integer, ForeignKey('Link.id'), primary_key=True)
-    color = '#ff8247'
 
     def __init__(self, **kwargs):
         super(Fiber, self).__init__(**kwargs)
@@ -118,7 +114,6 @@ class Traffic(Link):
     }
 
     id = Column(Integer, ForeignKey('Link.id'), primary_key=True)
-    color = '#902bec'
 
     def __init__(self, **kwargs):
         super(Traffic, self).__init__(**kwargs)

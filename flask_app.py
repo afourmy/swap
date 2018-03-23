@@ -80,7 +80,8 @@ def routing():
 
 @app.route('/graph_transformation', methods=['POST'])
 def graph_transformation():
-    session['transformed_graph'], vis_graph = solver.graph_transformation()
+    graph, vis_graph = solver.graph_transformation(session['paths'])
+    session['transformed_graph'] = graph
     return jsonify(vis_graph)
 
 
@@ -90,7 +91,7 @@ def graph_coloring(algorithm):
     colors_per_fiber, coords = defaultdict(list), {}
     for traffic in Traffic.query.all():
         for fiber in Fiber.query.all():
-            if fiber.name in traffic.path:
+            if fiber.name in session['paths'][traffic.name]:
                 colors_per_fiber[fiber.name].append(results['colors'][traffic.name])
                 coords[fiber.name] = (
                     (fiber.source.longitude, fiber.source.latitude),
