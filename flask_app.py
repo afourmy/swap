@@ -13,7 +13,7 @@ if path_app not in path:
 
 from solver import Solver
 from database import db, create_database
-from models import Fiber, object_class, object_factory, Traffic
+from models import Fiber, Link, Node, object_class, object_factory, Traffic
 
 
 def configure_database(app):
@@ -67,9 +67,8 @@ def index():
             ])
             for obj in cls.query.all()
         }
-        for obj_type, cls in object_class.items()
+        for obj_type, cls in (('Node', Node), ('Link', Link))
     }
-    print(objects)
     return render_template('index.html', objects=objects)
 
 
