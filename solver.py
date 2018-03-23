@@ -105,10 +105,12 @@ class Solver:
             # and assign it to the current optical switch
             traffic_color[largest_degree] = min_index
         number_lambda = max(traffic_color.values()) + 1
-        print(traffic_color)
         return {'lambda': number_lambda, 'colors': traffic_color}
 
     def linear_programming(self, graph, K=7):
+        # we start by handling the case of nodes with no adjacencies
+        single_nodes = [t for t, adj in graph['nodes'].items() if not adj]
+
         # we note x_v_wl the variable that defines whether wl is used for 
         # the path v (x_v_wl = 1) or not (x_v_wl = 0)
         # we construct the vector of variable the following way:
@@ -153,7 +155,7 @@ class Solver:
                 G2.append(row)
         # G2 size should be K * T (rows) x K * (V + 1) (columns)
 
-        # finally, we want to ensure that wavelength are used in 
+        # finally, we want to ensure that wavelengths are used in 
         # ascending order, meaning that y_wl >= y_(wl + 1) for wl 
         # in [0, K-1]. We can rewrite it y_(wl + 1) - y_wl <= 0
         G3 = []
@@ -169,5 +171,10 @@ class Solver:
         A, G, b, c, h = map(matrix, (A, G, b, c, h))
         binvar = set(range(K * (V + 1)))
         _, x = glpk.ilp(c, G.T, h, A.T, b, B=binvar)
-        wl = {t: i for i in range(K) for id, t in enumerate(graph['nodes']) if x[i + id*V]}
+
+        wl = {
+            t: 0 if t in single_nodes else i for i in range(K) 
+            for id, t in enumerate(graph['nodes']) if x[i + id*V]
+        }
+
         return {'lambda': int(sum(x[-K:])), 'colors': wl}
