@@ -69,6 +69,7 @@ def index():
         }
         for obj_type, cls in object_class.items()
     }
+    print(objects)
     return render_template('index.html', objects=objects)
 
 
@@ -101,9 +102,4 @@ def get_path(traffic_link):
 
 
 if __name__ == '__main__':
-    app.run(
-        host='0.0.0.0',
-        port=5000,
-        threaded=True,
-        debug=True
-    )
+    app.run(host='0.0.0.0', port=5000, threaded=True, debug=True)

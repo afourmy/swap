@@ -67,7 +67,6 @@
         </div>
       </div>
     </div>
-
     <div class="panel-group" style="z-index:500; position: absolute; top: 20px; right:20px;">
       <form id="fileform" class="form-horizontal form-label-left" enctype="multipart/form-data" method="post" >
         <div style="padding-bottom:5px;">
@@ -77,10 +76,60 @@
         </div>
       </form>
     </div>
-
     <div id="map">
-
     <script>
+      var polylines = [];
+          selectedLines = [];
+          link_name_to_polyline = {};
+
+      function clearLines(){
+        for (i = 0; i < polylines.length; i++) {
+          map.removeLayer(polylines[i]);
+        }
+      }
+
+      function unselectLines(){
+        for (i = 0; i < selectedLines.length; i++) {
+          selectedLines[i].setStyle({color: '#245611'});
+        }
+      }
+
+      {% for link, properties in objects['Link'].items() %}
+        var pointA = new L.LatLng({{ link['source']['latitude'] }}, {{ link['source']['longitude'] }});
+        var pointB = new L.LatLng({{ link['destination']['latitude'] }}, {{ link['destination']['longitude'] }});
+        var pointList = [pointA, pointB];
+
+        var polyline = new L.Polyline(pointList, {
+          color: {% if link.subtype == 'fiber' %} '#0000FF' {% else %} '#333333' {% endif %},
+          weight: 3, opacity: 1, smoothFactor: 1 
+          });
+
+        polyline.addTo(map);
+        polylines.push(polyline);
+        {% if link.subtype == 'fiber' %}
+          link_name_to_polyline["{{ link.name }}"] = polyline;
+        {% else %}
+          polyline.on('click', function() {
+            $.ajax({
+              type: "POST",
+              url: "/path_" + "{{ link.name }}",
+              dataType: "json",
+              success: function(data){
+                unselectLines();
+                for (i = 0; i < data.length; i++) {
+                  polyline = link_name_to_polyline[data[i]];
+                  selectedLines.push(polyline);
+                  polyline.setStyle({color: 'red'});
+                }
+              }
+            });
+          });
+        {% endif %}
+
+        polyline.bindPopup("{% for property in properties %}\
+        <b>{{ property|capitalize }}</b>: {{ properties[property] }}<br>\
+        {% endfor %}<br>");
+      {% endfor %}
       document.getElementById("file").onchange = function() {
         $("#fileform").submit();
       };
@@ -211,57 +260,6 @@
         marker.addTo(map);
       {% endfor %}
 
-      var polylines = [];
-          selectedLines = [];
-          link_name_to_polyline = {};
-
-      function clearLines(){
-        for (i = 0; i < polylines.length; i++) {
-          map.removeLayer(polylines[i]);
-        }
-      }
-
-      function unselectLines(){
-        for (i = 0; i < selectedLines.length; i++) {
-          selectedLines[i].setStyle({color: '#245611'});
-        }
-      }
-
-      {% for link, properties in objects['Link'].items() %}
-        var pointA = new L.LatLng({{ link['source']['latitude'] }}, {{ link['source']['longitude'] }});
-        var pointB = new L.LatLng({{ link['destination']['latitude'] }}, {{ link['destination']['longitude'] }});
-        var pointList = [pointA, pointB];
-
-        var polyline = new L.Polyline(pointList, {
-          color: '#245611',
-          weight: 3,
-          opacity: 1,
-          smoothFactor: 1
-          });
-
-        polyline.addTo(map);
-        polylines.push(polyline);
-        link_name_to_polyline["{{ link.name }}"] = polyline;
-        polyline.on('click', function() {
-          $.ajax({
-            type: "POST",
-            url: "/path_" + "{{ link.name }}",
-            dataType: "json",
-            success: function(data){
-              unselectLines();
-              for (i = 0; i < data.length; i++) {
-                polyline = link_name_to_polyline[data[i]];
-                selectedLines.push(polyline);
-                polyline.setStyle({color: 'red'});
-              }
-            }
-          });
-        });
-
-        polyline.bindPopup("{% for property in properties %}\
-        <b>{{ property|capitalize }}</b>: {{ properties[property] }}<br>\
-        {% endfor %}<br>");
-      {% endfor %}
     </script>
   </body>
 </html>

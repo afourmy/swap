@@ -53,11 +53,10 @@ class Link(Object):
 
     properties = (
         'name',
+        'subtype',
         'source',
         'destination',
         'cost',
-        'flowSD',
-        'flowDS',
     )
 
     id = Column(Integer, ForeignKey('Object.id'), primary_key=True)
