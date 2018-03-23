@@ -1,3 +1,4 @@
+from collections import defaultdict
 from database import db
 import numpy as np
 from cvxopt import matrix, glpk
@@ -7,6 +8,7 @@ from models import Node, Fiber, Traffic
 class Solver:
 
     def shortest_path(self):
+        traffic_paths = defaultdict(list)
         graph = {node: {} for node in Node.query.all()}
         for node in Node.query.all():
             for neighbor, fiber in node.adjacencies('fiber'):
@@ -55,9 +57,8 @@ class Solver:
             for fiber in Fiber.query.all():
                 src, dest = fiber.source, fiber.destination
                 if resulting_graph[src][dest] or resulting_graph[dest][src]:
-                    traffic.path.append(fiber.name)
-        db.session.commit()
-        return {}
+                    traffic_paths[traffic.name].append(fiber.name)
+        return traffic_paths
 
     def graph_transformation(self):
         # in the new graph, each node corresponds to a traffic path

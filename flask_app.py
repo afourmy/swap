@@ -72,6 +72,12 @@ def index():
     return render_template('index.html', objects=objects)
 
 
+@app.route('/routing', methods=['POST'])
+def routing():
+    session['paths'] = solver.shortest_path()
+    return jsonify({})
+
+
 @app.route('/graph_transformation', methods=['POST'])
 def graph_transformation():
     session['transformed_graph'], vis_graph = solver.graph_transformation()
@@ -96,8 +102,7 @@ def graph_coloring(algorithm):
 
 @app.route('/path_<traffic_link>', methods=['POST'])
 def get_path(traffic_link):
-    traffic = db.session.query(Traffic).filter_by(name=traffic_link).first()
-    return jsonify(traffic.path)
+    return jsonify(session['paths'][traffic_link])
 
 
 if __name__ == '__main__':

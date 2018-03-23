@@ -164,6 +164,7 @@
         <b>{{ property|capitalize }}</b>: {{ properties[property] }}<br>\
         {% endfor %}<br>");
       {% endfor %}
+
       document.getElementById("file").onchange = function() {
         $("#fileform").submit();
       };
@@ -171,7 +172,7 @@
       function routing(){
         $.ajax({
           type: "POST",
-          url: "/shortest_path",
+          url: "/routing",
           dataType: "json",
           success: function(graph) {}
         });
