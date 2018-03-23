@@ -6,8 +6,8 @@ RUN pip install -r requirements.txt
 
 COPY gunicorn_config.py .
 
-COPY source /app
+COPY swap /swap
 
 EXPOSE 5100
 
-CMD ["gunicorn", "--config", "gunicorn_config.py", "flask_app:app"]
+CMD ["gunicorn", "--chdir", "swap", "--config", "./gunicorn_config.py", "flask_app:app"]
