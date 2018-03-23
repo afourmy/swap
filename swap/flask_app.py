@@ -1,5 +1,5 @@
 from collections import defaultdict, OrderedDict
-from flask import Flask, jsonify, render_template, request, session
+from flask import Blueprint, Flask, jsonify, render_template, request, session
 from os.path import abspath, dirname
 from werkzeug.utils import secure_filename
 from xlrd import open_workbook
@@ -15,34 +15,14 @@ from solver import Solver
 from database import db, create_database
 from models import Fiber, Link, Node, object_class, object_factory, Traffic
 
-
-def configure_database(app):
-    create_database()
-
-    @app.teardown_request
-    def shutdown_session(exception=None):
-        db.session.remove()
-    db.init_app(app)
-
-
-def create_app():
-    app = Flask(__name__)
-    app.config['SECRET_KEY'] = 'key'
-    configure_database(app)
-    solver = Solver()
-    return app, solver
-
-
-app, solver = create_app()
-
+swap = Blueprint('swap_app', __name__)
 
 def allowed_file(name, allowed_extensions):
     allowed_syntax = '.' in name
     allowed_extension = name.rsplit('.', 1)[1].lower() in allowed_extensions
     return allowed_syntax and allowed_extension
 
-
-@app.route('/', methods=['GET', 'POST'])
+@swap.route('/', methods=['GET', 'POST'])
 def index():
     if request.method == 'POST':
         file = request.files['file']
@@ -72,20 +52,20 @@ def index():
     return render_template('index.html', objects=objects)
 
 
-@app.route('/routing', methods=['POST'])
+@swap.route('/routing', methods=['POST'])
 def routing():
     session['paths'] = solver.shortest_path()
     return jsonify({})
 
 
-@app.route('/graph_transformation', methods=['POST'])
+@swap.route('/graph_transformation', methods=['POST'])
 def graph_transformation():
     graph, vis_graph = solver.graph_transformation(session['paths'])
     session['transformed_graph'] = graph
     return jsonify(vis_graph)
 
 
-@app.route('/wavelength_assignment/<algorithm>', methods=['POST'])
+@swap.route('/wavelength_assignment/<algorithm>', methods=['POST'])
 def graph_coloring(algorithm):
     results = getattr(solver, algorithm)(session['transformed_graph'])
     colors_per_fiber, coords = defaultdict(list), {}
@@ -102,9 +82,35 @@ def graph_coloring(algorithm):
     return jsonify(results)
 
 
-@app.route('/path_<traffic_link>', methods=['POST'])
+@swap.route('/path_<traffic_link>', methods=['POST'])
 def get_path(traffic_link):
     return jsonify(session['paths'][traffic_link])
+
+def configure_database(app):
+    create_database()
+
+    @app.teardown_request
+    def shutdown_session(exception=None):
+        db.session.remove()
+    db.init_app(app)
+
+
+def create_app():
+    app = Flask(__name__)
+    app.config['SECRET_KEY'] = 'key'
+    app.register_blueprint(swap)
+    configure_database(app)
+    solver = Solver()
+    return app, solver
+
+
+app, solver = create_app()
+
+
+
+
+
+
 
 
 if __name__ == '__main__':
