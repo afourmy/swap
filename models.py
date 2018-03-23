@@ -1,5 +1,6 @@
 from collections import OrderedDict
 from database import Base
+from math import asin, cos, radians, sin, sqrt
 from sqlalchemy import Column, ForeignKey, Integer, String, Float, PickleType
 from sqlalchemy.ext.mutable import MutableList
 from sqlalchemy.orm import backref, relationship
@@ -103,6 +104,24 @@ class Fiber(Link):
     def __init__(self, **kwargs):
         super(Fiber, self).__init__(**kwargs)
         self.subtype = 'fiber'
+        self.compute_distance()
+
+    def hav(self, angle):
+        return sin(angle/2)**2
+
+    def compute_distance(self):
+        coords = (
+            self.source.latitude, self.source.longitude,
+            self.destination.latitude, self.destination.longitude
+        )
+        # we convert from decimal degree to radians
+        lat_cityA, lon_cityA, lat_cityB, lon_cityB = map(radians, coords)
+        delta_lon = lon_cityB - lon_cityA
+        delta_lat = lat_cityB - lat_cityA
+        a = self.hav(delta_lat) + cos(lat_cityA) * cos(lat_cityB) * self.hav(delta_lon)
+        c = 2 * asin(sqrt(a))
+        # approximate radius of the Earth: 6371 km
+        self.distance = int(c * 6371)
 
 
 class Traffic(Link):
