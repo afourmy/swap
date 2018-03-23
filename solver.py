@@ -106,6 +106,7 @@ class Solver:
             # and assign it to the current optical switch
             traffic_color[largest_degree] = min_index
         number_lambda = max(traffic_color.values()) + 1
+        print(traffic_color)
         return {'lambda': number_lambda, 'colors': traffic_color}
 
     def linear_programming(self, graph, K=7):
@@ -168,15 +169,6 @@ class Solver:
         G = np.concatenate((G2, G3), axis=0).tolist()
         A, G, b, c, h = map(matrix, (A, G, b, c, h))
         binvar = set(range(K * (V + 1)))
-        solsta, x = glpk.ilp(c, G.T, h, A.T, b, B=binvar)
-        
-        for index, traffic in enumerate(nodes):
-            for i in range(K):
-            
-                print(i*V + index, i, index, x[i + index*V], traffic)
-                # if x[i*V + index]:
-                    # print(i, index, traffic)
-                
-        print(x, len(x))
-        # print('ttt'*100, int(sum(x[-K:])))
-        #return int(sum(x[-K:]))
+        _, x = glpk.ilp(c, G.T, h, A.T, b, B=binvar)
+        wl = {t: i for i in range(K) for id, t in enumerate(nodes) if x[i + id*V]}
+        return {'lambda': int(sum(x[-K:])), 'colors': wl}
