@@ -79,7 +79,6 @@ class Solver:
                         links.append({"from": traffic1.name, "to": traffic2.name})
             visited.add(traffic1)
         transformed_graph = {'nodes': graph_nodes, 'links': graph_links}
-        print(transformed_graph)
         return transformed_graph, {'nodes': nodes, 'links': links}
 
     def largest_degree_first(self, graph):
@@ -115,10 +114,10 @@ class Solver:
         # we construct the vector of variable the following way:
         # x = [x_1_0, x_2_0, ..., x_V_0, x_1_1, ... x_V-1_K-1, x_V_K-1]
         # that is, [(x_v_0) for v in V, ..., (x_v_K) for wl in K]
-        nodes, links = graph['nodes'], graph['links']
+
         # V is the total number of path (i.e the total number of nodes
         # in the transformed graph)
-        V, T = len(nodes), len(links)
+        V, T = len(graph['nodes']), len(graph['links'])
 
         # for the objective function, which must minimize the sum of y_wl, 
         # that is, the number of wavelength used
@@ -137,20 +136,20 @@ class Solver:
 
         G2 = []
         for i in range(K):
-            for link in links:
+            for link in graph['links']:
                 # we want to ensure that paths that have at least one 
                 # physical link in common are not assigned the same wavelength.
                 # this means that x_v_src_i + x_v_dest_i <= y_i
                 row = []
                 # vector of x_v_wl: we set x_v_src_i and x_v_dest_i to 1
-                for traffic in nodes:
+                for traffic in graph['nodes']:
                     for j in range(K):
                         row.append(float(traffic in link and i == j))
                 # we continue filling the vector with the y_wl
                 # we want to have x_v_src_i + x_v_dest_i - y_i <= 0
                 # hence the 'minus' sign instead of float
-                for j in range(K):
-                    row.append(-float(i == j))
+                # for j in range(K):
+                row.extend([-float(i == j) for j in range(K)])
                 G2.append(row)
         # G2 size should be K * T (rows) x K * (V + 1) (columns)
 
@@ -170,5 +169,5 @@ class Solver:
         A, G, b, c, h = map(matrix, (A, G, b, c, h))
         binvar = set(range(K * (V + 1)))
         _, x = glpk.ilp(c, G.T, h, A.T, b, B=binvar)
-        wl = {t: i for i in range(K) for id, t in enumerate(nodes) if x[i + id*V]}
+        wl = {t: i for i in range(K) for id, t in enumerate(graph['nodes']) if x[i + id*V]}
         return {'lambda': int(sum(x[-K:])), 'colors': wl}
