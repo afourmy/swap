@@ -8,6 +8,6 @@ COPY gunicorn_config.py .
 
 COPY swap /swap
 
-EXPOSE 5100
+EXPOSE 5000
 
 CMD ["gunicorn", "--chdir", "swap", "--config", "./gunicorn_config.py", "flask_app:app"]
