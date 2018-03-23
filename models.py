@@ -128,8 +128,7 @@ class Traffic(Link):
 
 object_class = OrderedDict([
     ('Node', Node),
-    ('Fiber', Fiber),
-    ('Traffic', Traffic)
+    ('Link', Link)
 ])
 
 

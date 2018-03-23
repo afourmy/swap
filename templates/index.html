@@ -188,6 +188,12 @@
       map.addLayer(osm_layer);
       var current_layer = osm_layer;
 
+      function switch_layer(layer){
+        map.removeLayer(current_layer);
+        current_layer = L.tileLayer(layers[layer]);
+        map.addLayer(current_layer);
+        }
+
       var icon_switch = L.icon({
         iconUrl: 'static/images/optical_switch.gif',
         iconSize: [20, 20], // size of the icon
@@ -205,12 +211,6 @@
         marker.addTo(map);
       {% endfor %}
 
-      function switch_layer(layer){
-        map.removeLayer(current_layer);
-        current_layer = L.tileLayer(layers[layer]);
-        map.addLayer(current_layer);
-        }
-
       var polylines = [];
           selectedLines = [];
           link_name_to_polyline = {};
@@ -227,7 +227,7 @@
         }
       }
 
-      {% for link, properties in objects['Fiber'].items() %}
+      {% for link, properties in objects['Link'].items() %}
         var pointA = new L.LatLng({{ link['source']['latitude'] }}, {{ link['source']['longitude'] }});
         var pointB = new L.LatLng({{ link['destination']['latitude'] }}, {{ link['destination']['longitude'] }});
         var pointList = [pointA, pointB];
@@ -242,26 +242,6 @@
         polyline.addTo(map);
         polylines.push(polyline);
         link_name_to_polyline["{{ link.name }}"] = polyline;
-        
-        polyline.bindPopup("{% for property in properties %}\
-        <b>{{ property|capitalize }}</b>: {{ properties[property] }}<br>\
-        {% endfor %}<br>");
-      {% endfor %}
-
-      {% for link, properties in objects['Traffic'].items() %}
-        var pointA = new L.LatLng({{ link['source']['latitude'] }}, {{ link['source']['longitude'] }});
-        var pointB = new L.LatLng({{ link['destination']['latitude'] }}, {{ link['destination']['longitude'] }});
-        var pointList = [pointA, pointB];
-
-        var polyline = new L.Polyline(pointList, {
-          color: '#245611',
-          weight: 3,
-          opacity: 1,
-          smoothFactor: 1
-          });
-
-        polyline.addTo(map);
-        polylines.push(polyline);
         polyline.on('click', function() {
           $.ajax({
             type: "POST",
@@ -277,7 +257,7 @@
             }
           });
         });
-        
+
         polyline.bindPopup("{% for property in properties %}\
         <b>{{ property|capitalize }}</b>: {{ properties[property] }}<br>\
         {% endfor %}<br>");
