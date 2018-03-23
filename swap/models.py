@@ -1,8 +1,7 @@
 from collections import OrderedDict
 from database import Base
 from math import asin, cos, radians, sin, sqrt
-from sqlalchemy import Column, ForeignKey, Integer, String, Float, PickleType
-from sqlalchemy.ext.mutable import MutableList
+from sqlalchemy import Column, ForeignKey, Integer, String, Float
 from sqlalchemy.orm import backref, relationship
 
 
@@ -107,7 +106,7 @@ class Fiber(Link):
         self.compute_distance()
 
     def hav(self, angle):
-        return sin(angle/2)**2
+        return sin(angle / 2)**2
 
     def compute_distance(self):
         coords = (

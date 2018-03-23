@@ -1,15 +1,15 @@
 from collections import defaultdict, OrderedDict
 from flask import Flask, jsonify, render_template, request, session
 from os.path import abspath, dirname
-from sys import dont_write_bytecode, path
 from werkzeug.utils import secure_filename
 from xlrd import open_workbook
 from xlrd.biffh import XLRDError
+import sys
 
-dont_write_bytecode = True
+sys.dont_write_bytecode = True
 path_app = dirname(abspath(__file__))
-if path_app not in path:
-    path.append(path_app)
+if path_app not in sys.path:
+    sys.path.append(path_app)
 
 from solver import Solver
 from database import db, create_database

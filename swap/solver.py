@@ -1,5 +1,4 @@
 from collections import defaultdict
-from database import db
 import numpy as np
 from cvxopt import matrix, glpk
 from models import Node, Fiber, Traffic
@@ -14,7 +13,7 @@ class Solver:
             for neighbor, fiber in node.adjacencies('fiber'):
                 graph[node][neighbor] = fiber.distance
 
-        n = 2*len(Fiber.query.all())
+        n = 2 * len(Fiber.query.all())
 
         c = []
         for node in graph:
@@ -24,7 +23,7 @@ class Solver:
         # for the condition 0 < x_ij < 1
         h = np.concatenate([np.ones(n), np.zeros(n)])
         id = np.eye(n, n)
-        G = np.concatenate((id, -1*id), axis=0).tolist()
+        G = np.concatenate((id, -1 * id), axis=0).tolist()
 
         for traffic in Traffic.query.all():
             A, b = [], []
@@ -111,7 +110,7 @@ class Solver:
         # we start by handling the case of nodes with no adjacencies
         single_nodes = [t for t, adj in graph['nodes'].items() if not adj]
 
-        # we note x_v_wl the variable that defines whether wl is used for 
+        # we note x_v_wl the variable that defines whether wl is used for
         # the path v (x_v_wl = 1) or not (x_v_wl = 0)
         # we construct the vector of variable the following way:
         # x = [x_1_0, x_2_0, ..., x_V_0, x_1_1, ... x_V-1_K-1, x_V_K-1]
@@ -121,7 +120,7 @@ class Solver:
         # in the transformed graph)
         V, T = len(graph['nodes']), len(graph['links'])
 
-        # for the objective function, which must minimize the sum of y_wl, 
+        # for the objective function, which must minimize the sum of y_wl,
         # that is, the number of wavelength used
         c = np.concatenate([np.zeros(V * K), np.ones(K)])
 
@@ -131,7 +130,7 @@ class Solver:
         # for the path v, and the rest of it set to 0.
         A = []
         for path in range(V):
-            row = [float(K * path <= i < K * (path + 1)) for i in range(V * K)] 
+            row = [float(K * path <= i < K * (path + 1)) for i in range(V * K)]
             row += [0.] * K
             A.append(row)
         b = np.ones(V)
@@ -139,7 +138,7 @@ class Solver:
         G2 = []
         for i in range(K):
             for link in graph['links']:
-                # we want to ensure that paths that have at least one 
+                # we want to ensure that paths that have at least one
                 # physical link in common are not assigned the same wavelength.
                 # this means that x_v_src_i + x_v_dest_i <= y_i
                 row = []
@@ -155,8 +154,8 @@ class Solver:
                 G2.append(row)
         # G2 size should be K * T (rows) x K * (V + 1) (columns)
 
-        # finally, we want to ensure that wavelengths are used in 
-        # ascending order, meaning that y_wl >= y_(wl + 1) for wl 
+        # finally, we want to ensure that wavelengths are used in
+        # ascending order, meaning that y_wl >= y_(wl + 1) for wl
         # in [0, K-1]. We can rewrite it y_(wl + 1) - y_wl <= 0
         G3 = []
         for i in range(1, K):
@@ -173,8 +172,8 @@ class Solver:
         _, x = glpk.ilp(c, G.T, h, A.T, b, B=binvar)
 
         wl = {
-            t: 0 if t in single_nodes else i for i in range(K) 
-            for id, t in enumerate(graph['nodes']) if x[i + id*V]
+            t: 0 if t in single_nodes else i for i in range(K)
+            for id, t in enumerate(graph['nodes']) if x[i + id * V]
         }
 
         return {'lambda': int(sum(x[-K:])), 'colors': wl}
