@@ -12,7 +12,7 @@ if path_app not in sys.path:
 
 from solver import Solver
 from database import db, create_database
-from models import Fiber, Link, Node, object_class, object_factory, Traffic
+from models import Fiber, Link, Node, object_class, object_factory, Traffic, Object
 
 swap = Blueprint('swap_app', __name__)
 
