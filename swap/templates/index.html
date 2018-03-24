@@ -200,28 +200,20 @@
                   ]}}]
               };
 
-              var lineWeight = 6;
-              var busLines = L.layerGroup();
-              var busStops = L.layerGroup();
-
+              var lineWeight = 5;
               var lineSegment, linesOnSegment, segmentCoords, segmentWidth;
               geoJson.features.forEach(function(lineSegment) {
-                segmentCoords = L.GeoJSON.coordsToLatLngs(lineSegment.geometry.coordinates, 0);
+                segmentCoords = 
                 linesOnSegment = lineSegment.properties.lines;
                 segmentWidth = linesOnSegment.length * (lineWeight + 1);
 
-                for(var j=0;j<linesOnSegment.length;j++) {
-                  L.polyline(segmentCoords, {
-                    color: colors[linesOnSegment[j]],
-                    weight: lineWeight,
-                    opacity: 1,
-                    offset: j * (lineWeight + 1) - (segmentWidth / 2) + ((lineWeight + 1) / 2)
-                  }).addTo(busLines);
+                for(var j = 0; j < linesOnSegment.length; j++) {
+                  L.polyline(L.GeoJSON.coordsToLatLngs(lineSegment.geometry.coordinates, 0), 
+                    {color: colors[linesOnSegment[j]], weight: lineWeight,
+                    opacity: 1, offset: j * (lineWeight + 1) - (segmentWidth / 2) + ((lineWeight + 1) / 2)
+                  }).addTo(map);
                 }
               });
-
-              busLines.addTo(map);
-              busStops.addTo(map);
             }
           }
         });
