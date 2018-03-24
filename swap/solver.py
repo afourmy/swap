@@ -175,7 +175,7 @@ class Solver:
 
         wl = {
             t: 0 if t in single_nodes else i for i in range(K)
-            for id, t in enumerate(graph['nodes']) if x[i + id * V]
+            for id, t in enumerate(graph['nodes']) if x[i + id * K]
         }
 
         return {'lambda': int(sum(x[-K:])), 'colors': wl}
