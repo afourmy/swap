@@ -17,10 +17,12 @@ from models import Fiber, Link, Node, object_class, object_factory, Traffic
 
 swap = Blueprint('swap_app', __name__)
 
+
 def allowed_file(name, allowed_extensions):
     allowed_syntax = '.' in name
     allowed_extension = name.rsplit('.', 1)[1].lower() in allowed_extensions
     return allowed_syntax and allowed_extension
+
 
 @swap.route('/', methods=['GET', 'POST'])
 def index():
@@ -86,6 +88,7 @@ def graph_coloring(algorithm):
 def get_path(traffic_link):
     return jsonify(session['paths'][traffic_link])
 
+
 def configure_database(app):
     create_database()
 
@@ -98,6 +101,7 @@ def configure_database(app):
 def create_app():
     app = Flask(__name__)
     app.config['SECRET_KEY'] = 'key'
+    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     app.register_blueprint(swap)
     configure_database(app)
     solver = Solver()
@@ -105,12 +109,6 @@ def create_app():
 
 
 app, solver = create_app()
-
-
-
-
-
-
 
 
 if __name__ == '__main__':
