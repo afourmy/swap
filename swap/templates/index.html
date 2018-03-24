@@ -178,7 +178,7 @@
         });
       }
 
-      var colors = ['red', '#08f', '#0c0', '#f80'];
+      var colors = ['red', '#08f', '#0c0', '#f80', 'purple', 'pink', 'yellow'];
       function wavelengthAssignment(algorithm){
         $.ajax({
           type: "POST",
@@ -201,8 +201,6 @@
               };
 
               var lineWeight = 6;
-              var outlines = L.layerGroup();
-              var lineBg = L.layerGroup();
               var busLines = L.layerGroup();
               var busStops = L.layerGroup();
 
@@ -211,18 +209,6 @@
                 segmentCoords = L.GeoJSON.coordsToLatLngs(lineSegment.geometry.coordinates, 0);
                 linesOnSegment = lineSegment.properties.lines;
                 segmentWidth = linesOnSegment.length * (lineWeight + 1);
-
-                L.polyline(segmentCoords, {
-                  color: '#000',
-                  weight: segmentWidth + 5,
-                  opacity: 1
-                }).addTo(outlines);
-
-                L.polyline(segmentCoords, {
-                  color: '#fff',
-                  weight: segmentWidth + 3,
-                  opacity: 1
-                }).addTo(lineBg);
 
                 for(var j=0;j<linesOnSegment.length;j++) {
                   L.polyline(segmentCoords, {
@@ -234,8 +220,6 @@
                 }
               });
 
-              outlines.addTo(map);
-              lineBg.addTo(map);
               busLines.addTo(map);
               busStops.addTo(map);
             }
