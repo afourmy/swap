@@ -7,39 +7,30 @@
 
 
 
-# Getting started
+# Installation
 
-The following modules are used in pyTSP:
-```
-flask
-flask_sqlalchemy (database)
-numpy (linear programming)
-cvxopt (linear programming)
-xlrd (graph import)
-```
+### (Optional) Set up a [virtual environment](https://docs.python.org/3/library/venv.html) 
 
-In order to use pyTSP, you need to:
+### 1. Get the code
+    git clone https://github.com/afourmy/SWAP.git
+    cd SWAP
 
-- (optional) set up a [virtual environment](https://docs.python.org/3/library/venv.html) .
+### 2. Install requirements 
+    pip install -r requirements.txt
 
-- clone pyTSP (or download as a zip archive from github)
-```
-git clone https://github.com/afourmy/pyTSP.git
-```
-    
-- install the requirements
-```
-cd pyTSP
-pip install -r requirements.txt
-```
+### 3. Run the code
+    cd swap
+    python flask_app.py
 
-- run **/flask_app.py**.
-```
-python flask_app.py
-```
+### 4. Go the http://127.0.0.1:5000/
 
-- go the http://127.0.0.1:5000/.
+# Run SWAP in a docker container
 
-# Contact
+### 1. Fetch the image on dockerhub
+    docker pull afourmy/swap
 
-You can contact me on the [Network to Code slack](http://networktocode.herokuapp.com "Network to Code slack"). (@minto, channel #enms)
+### 2. Find the name of the docker image
+    docker images
+
+### 3. Run the image on port 5000
+    docker run -p 5000:5000 image_name
