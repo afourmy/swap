@@ -20,19 +20,30 @@ def swap_algorithm_test(client):
     client.get('/').status_code == 200
 
 
+def count_objects(nodes, fibers, traffics):
+    assert len(Node.query.all()) == nodes
+    assert len(Fiber.query.all()) == fibers
+    assert len(Traffic.query.all()) == traffics
+
+
 def test_europe(client):
     assert client.get('/').status_code == 200
     create_from_file(client, 'europe.xls')
-    assert len(Node.query.all()) == 33
-    assert len(Fiber.query.all()) == 48
-    assert len(Traffic.query.all()) == 7
+    count_objects(33, 48, 7)
     swap_algorithm_test(client)
 
 
 def test_usa(client):
     assert client.get('/').status_code == 200
     create_from_file(client, 'usa.xls')
-    assert len(Node.query.all()) == 27
-    assert len(Fiber.query.all()) == 28
-    assert len(Traffic.query.all()) == 11
+    count_objects(27, 28, 11)
     swap_algorithm_test(client)
+
+
+def test_data_overwrite(client):
+    count_objects(0, 0, 0)
+    create_from_file(client, 'usa.xls')
+    create_from_file(client, 'europe.xls')
+    count_objects(33, 48, 7)
+    create_from_file(client, 'usa.xls')
+    count_objects(27, 28, 11)
