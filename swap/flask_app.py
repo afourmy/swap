@@ -23,9 +23,16 @@ def allowed_file(name, allowed_extensions):
     return allowed_syntax and allowed_extension
 
 
+import contextlib
+from sqlalchemy import MetaData
+
+
 @swap.route('/', methods=['GET', 'POST'])
 def index():
     if request.method == 'POST':
+        for model in (Fiber, Traffic, Link, Node, Object):
+            model.query.delete()
+            db.session.commit()
         file = request.files['file']
         if allowed_file(secure_filename(file.filename), {'xls', 'xlsx'}):
             book = open_workbook(file_contents=file.read())
