@@ -3,7 +3,6 @@ from flask import Blueprint, Flask, jsonify, render_template, request, session
 from os.path import abspath, dirname
 from werkzeug.utils import secure_filename
 from xlrd import open_workbook
-from xlrd.biffh import XLRDError
 import sys
 
 sys.dont_write_bytecode = True
