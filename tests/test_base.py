@@ -15,3 +15,10 @@ def test_authentication(client):
     assert len(Node.query.all()) == 33
     assert len(Fiber.query.all()) == 48
     assert len(Traffic.query.all()) == 7
+    client.post('/routing')
+    for traffic in Traffic.query.all():
+        client.post('/path_' + traffic.name)
+    client.post('/routing')
+    client.post('/graph_transformation')
+    client.post('/wavelength_assignment/largest_degree_first')
+    client.post('/wavelength_assignment/linear_programming')
