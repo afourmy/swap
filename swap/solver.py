@@ -119,6 +119,8 @@ class Solver:
         # V is the total number of path (i.e the total number of nodes
         # in the transformed graph)
         V, T = len(graph['nodes']), len(graph['links'])
+        if not T:
+            return {'lambda': 1, 'colors': dict.fromkeys(single_nodes, 0)}
 
         # for the objective function, which must minimize the sum of y_wl,
         # that is, the number of wavelength used
