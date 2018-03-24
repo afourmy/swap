@@ -31,10 +31,7 @@ def index():
         if allowed_file(secure_filename(file.filename), {'xls', 'xlsx'}):
             book = open_workbook(file_contents=file.read())
             for obj_type, cls in object_class.items():
-                try:
-                    sheet = book.sheet_by_name(obj_type)
-                except XLRDError:
-                    continue
+                sheet = book.sheet_by_name(obj_type)
                 properties = sheet.row_values(0)
                 for row_index in range(1, sheet.nrows):
                     kwargs = dict(zip(properties, sheet.row_values(row_index)))
