@@ -1,5 +1,7 @@
 # Introduction
 
+[![Build Status](https://travis-ci.org/afourmy/SWAP.svg?branch=master)](https://travis-ci.org/afourmy/SWAP)
+[![Coverage Status](https://coveralls.io/repos/github/afourmy/SWAP/badge.svg?branch=master)](https://coveralls.io/github/afourmy/SWAP?branch=master)
 
 # Algorithms
 
@@ -17,7 +19,7 @@ xlrd (graph import)
 ```
 
 In order to use pyTSP, you need to:
-    
+
 - (optional) set up a [virtual environment](https://docs.python.org/3/library/venv.html) .
 
 - clone pyTSP (or download as a zip archive from github)

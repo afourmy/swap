@@ -22,3 +22,4 @@ def test_authentication(client):
     client.post('/graph_transformation')
     client.post('/wavelength_assignment/largest_degree_first')
     client.post('/wavelength_assignment/linear_programming')
+    client.get('/').status_code == 200
