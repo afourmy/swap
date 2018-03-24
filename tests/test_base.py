@@ -9,12 +9,7 @@ def create_from_file(client, file):
         client.post('/', data=data)
 
 
-def test_authentication(client):
-    assert client.get('/').status_code == 200
-    create_from_file(client, 'europe.xls')
-    assert len(Node.query.all()) == 33
-    assert len(Fiber.query.all()) == 48
-    assert len(Traffic.query.all()) == 7
+def swap_algorithm_test(client):
     client.post('/routing')
     for traffic in Traffic.query.all():
         client.post('/path_' + traffic.name)
@@ -23,3 +18,21 @@ def test_authentication(client):
     client.post('/wavelength_assignment/largest_degree_first')
     client.post('/wavelength_assignment/linear_programming')
     client.get('/').status_code == 200
+
+
+def test_europe(client):
+    assert client.get('/').status_code == 200
+    create_from_file(client, 'europe.xls')
+    assert len(Node.query.all()) == 33
+    assert len(Fiber.query.all()) == 48
+    assert len(Traffic.query.all()) == 7
+    swap_algorithm_test(client)
+
+
+def test_usa(client):
+    assert client.get('/').status_code == 200
+    create_from_file(client, 'usa.xls')
+    assert len(Node.query.all()) == 27
+    assert len(Fiber.query.all()) == 28
+    assert len(Traffic.query.all()) == 11
+    swap_algorithm_test(client)
