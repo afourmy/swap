@@ -23,10 +23,6 @@ def allowed_file(name, allowed_extensions):
     return allowed_syntax and allowed_extension
 
 
-import contextlib
-from sqlalchemy import MetaData
-
-
 @swap.route('/', methods=['GET', 'POST'])
 def index():
     if request.method == 'POST':
