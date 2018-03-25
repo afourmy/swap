@@ -63,9 +63,12 @@ The resulting assignment is the following:
 ![Improved strategy](readme/simple_allocation2.png)
 
 The number of wavelengths required depends on the **order in which wavelengths are assigned** to the traffic paths.
+
 The Wavelength Assignment Problem aims at **minimizing the number of wavelengths**.
 
 # Algorithms
+
+## Routing with Linear Programming
 
 ## Reduction to a graph coloring problem
 
@@ -76,7 +79,8 @@ The Wavelength Assignment Problem aims at **minimizing the number of wavelengths
 # Similar projects you might be interested in:
     
 - [A vendor-agnostic NMS for graphical network automation](https://github.com/afourmy/eNMS) 
-- [A 2D/3D visualization of the Traveling Salesman Problem main heuristics](https://github.com/afourmy/pyTSP) 
+- [A 2D/3D visualization of the Traveling Salesman Problem main heuristics](https://github.com/afourmy/pyTSP)
+- [A vendor-agnostic NMS for network simulation and network optimization](https://github.com/afourmy/pyNMS) 
 
 # Installation
 
@@ -106,5 +110,24 @@ The Wavelength Assignment Problem aims at **minimizing the number of wavelengths
 ### 3. Run the image on port 5000
     docker run -p 5000:5000 image_name
 
+### 4. Go the http://127.0.0.1:5000/
+
 # Credits
 
+[Bootstrap](https://getbootstrap.com/ "Bootstrap"): Front-end HTML/CSS framework.
+
+[Flask](http://flask.pocoo.org/ "Flask"): A microframework based on the Werkzeug toolkit and Jinja2 template engine.
+
+[Flask SQLAlchemy](http://flask-sqlalchemy.pocoo.org/ "Flask SQLAlchemy"): Adds support for SQLAlchemy to Flask.
+
+[Jquery](https://jquery.com/ "Jquery"): JavaScript library designed to simplify the client-side scripting of HTML.
+
+[Leaflet](http://leafletjs.com/ "Leaflet"): JavaScript library for mobile-friendly interactive maps.
+
+[Leaflet-polyline](https://github.com/bbecquet/Leaflet.PolylineDecorator "Leaflet polyline"): A leaflet plugin to define patterns on Polylines.
+
+[Linear Programming and Algorithms for Communication Networks by Eiji Oki.](https://www.amazon.com/Linear-Programming-Algorithms-Communication-Networks/dp/1466552638)
+
+[Vis](http://visjs.org): A dynamic, browser based JavaScript visualization library.
+
+[xlrd](https://github.com/python-excel/xlrd): Library to extract data from Microsoft Excel (tm) spreadsheet files.
