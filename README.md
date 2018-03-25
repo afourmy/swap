@@ -5,10 +5,8 @@
 
 SWAP is a solver for the Routing and Wavelength Assignment Problem (RWA).
 Two methods were implemented to solve the wavelength assignment problem:
-- Linear programming (GLPK, yields an optimal solution)
+- Linear programming (optimal solution)
 - "Largest degree first" heuristic
-
-SWAP uses **Vis.js** and **Leaflet.js** to generate a visualization of the wavelength assignment.
 
 ![SWAP: Europe](readme/swap.gif)
 
@@ -20,9 +18,36 @@ In optical networks, the Wavelength Divison Multiplexing (WDM) technology is use
 
 In an all-optical network, a wavelength can cross an optical switch without Optical-Electrical-Optical (OEO) conversion. While this is a step forward towards cheaper and "greener" networks, a trade-off is that there has to be an end-to-end "wavelength continuity": a wavelength stays the same from the source edge to the destination edge, and it cannot be used by different lightpaths on the same optical fiber.
 
-The wavelength allocation problem consists in finding the minimum number of wavelengths that are required, and how to allocate them to lightpaths. 
+The wavelength allocation problem consists in finding the minimum number of wavelengths that are required, and how to allocate them to lightpaths.
+
+# A first example
+
+Let's consider a situation with 5 optical switch in a line, and 5 traffic paths:
+    
+![Simple graph](readme/simple.png)
+
+## Naive strategy: assign wavelengths sequentially
+
+We will assign wavelength sequentially (in increasing order of the traffic paths indices) and always choose the smallest available wavelength index.
+ 
+We write the n-th wavelength Ln (lambda x), and the n-th path Pn.
+
+- L1 is assigned to P1
+- We cannot reuse L1 for P2, because P1 and P2 have a link in common. Therefore, L2 is assigned to P2.
+- P3 uses all four fibers: we need a new wavelength L3.
+- P4 does not share any fiber with P1 or P2: we choose the smallest available wavelength index: L1.
+- Finally, P5 shares fibers with P2, P3 and P4: we need to use a new wavelength L4.
+
+With this naive strategy, **4 wavelengths** are required.
+
 
 # Algorithms
+
+## Reduction to a graph coloring problem
+
+## "Largest degree first" heuristic
+
+## Linear programming
 
 # Similar projects you might be interested in:
     
@@ -56,3 +81,6 @@ The wavelength allocation problem consists in finding the minimum number of wave
 
 ### 3. Run the image on port 5000
     docker run -p 5000:5000 image_name
+
+# Credits
+
