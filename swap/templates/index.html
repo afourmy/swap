@@ -41,28 +41,24 @@
     </div>
   </div>
   <body>
-    <form id="aform" method="post">
-      <div class="btn-group" style="z-index:500; position: absolute; left:40vw; top:10px;">  
-        <div class="btn-group">
-          <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">Tile layer
-            <span class="caret"></span>
-          </button>
-          <ul class="dropdown-menu">
-            <li><a onclick="switch_layer('osm')"> Open Street Map </a></li>
-            <li><a onclick="switch_layer('gm')"> Google Maps </a></li>
-            <li><a onclick="switch_layer('nasa')"> NASA </a></li>
-          </ul>
-        </div> 
-        <strong><p class="btn btn-danger score" style="min-width:100px;" id="score">Result</p></strong>
-      </div>
-    </form>
+    <strong><p class="btn btn-danger score" style="min-width:100px; z-index:500; position: absolute; left:45vw; top:10px;" id="score">Result</p></strong>
     <div class="panel-group" style="z-index:500; position: absolute; top: 20px; left:20px;">
       <div class="panel panel-primary panel-transparent">
-        <div class="panel-heading">RWA solver</div>
+        <div class="panel-heading" style="text-align: center;">SWAP</div>
         <div class="panel-body">
           <div class="btn-group-vertical btn-block" >
-            <button type="button" class="btn btn-primary" onclick="routing()">Routing</button>
-            <button type="button" class="btn btn-primary" data-toggle='modal' data-target='#graph-transformation'>Transform graph</button>
+            <button id="routing-button" type="button" class="btn btn-primary" onclick="routing()" style="width: 150px;">Routing</button>
+            <button id="wap-button" type="button" class="btn btn-primary" data-toggle='modal' data-target='#graph-transformation' style="width: 150px; display: none;">Transform graph</button>
+            <div class="btn-group">
+              <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">Tile layer
+                <span class="caret"></span>
+              </button>
+              <ul class="dropdown-menu">
+                <li><a onclick="switch_layer('osm')"> Open Street Map </a></li>
+                <li><a onclick="switch_layer('gm')"> Google Maps </a></li>
+                <li><a onclick="switch_layer('nasa')"> NASA </a></li>
+              </ul>
+            </div> 
           </div>
         </div>
       </div>
@@ -123,7 +119,7 @@
       }
 
       map.on("contextmenu", function(e) {
-        unselectLines()
+        unselectLines();
         e.preventDefault();
         });
 
@@ -146,6 +142,7 @@
           {% endfor %}<br>");
         {% else %}
           polyline.on('click', function() {
+            unselectLines();
             $.ajax({
               type: "POST",
               url: "/path_" + "{{ link.name }}",
@@ -167,6 +164,8 @@
       };
 
       function routing(){
+        $("#routing-button").hide();
+        $("#wap-button").show();
         $.ajax({
           type: "POST",
           url: "/routing",

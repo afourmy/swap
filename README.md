@@ -10,7 +10,7 @@ Two methods were implemented to solve the wavelength assignment problem:
 
 SWAP uses **Vis.js** and **Leaflet.js** to generate a visualization of the wavelength assignment.
 
-
+![SWAP: Europe](readme/swap.gif)
 
 # The Wavelength Assignment Problem
 
