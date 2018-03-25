@@ -116,17 +116,16 @@
           selectedLines = [];
           link_name_to_polyline = {};
 
-      function clearLines(){
-        for (i = 0; i < polylines.length; i++) {
-          map.removeLayer(polylines[i]);
+      function unselectLines(){
+        for (i = 0; i < selectedLines.length; i++) {
+          selectedLines[i].setStyle({color: '#0000FF'});
         }
       }
 
-      function unselectLines(){
-        for (i = 0; i < selectedLines.length; i++) {
-          selectedLines[i].setStyle({color: '#245611'});
-        }
-      }
+      map.on("contextmenu", function(e) {
+        unselectLines()
+        e.preventDefault();
+        });
 
       {% for link, properties in objects['Link'].items() %}
         var pointA = new L.LatLng({{ link['source']['latitude'] }}, {{ link['source']['longitude'] }});
@@ -142,6 +141,9 @@
         polylines.push(polyline);
         {% if link.subtype == 'fiber' %}
           link_name_to_polyline["{{ link.name }}"] = polyline;
+          polyline.bindPopup("{% for property in properties %}\
+          <b>{{ property|capitalize }}</b>: {{ properties[property] }}<br>\
+          {% endfor %}<br>");
         {% else %}
           polyline.on('click', function() {
             $.ajax({
@@ -149,7 +151,6 @@
               url: "/path_" + "{{ link.name }}",
               dataType: "json",
               success: function(data){
-                unselectLines();
                 for (i = 0; i < data.length; i++) {
                   polyline = link_name_to_polyline[data[i]];
                   selectedLines.push(polyline);
@@ -159,10 +160,6 @@
             });
           });
         {% endif %}
-
-        polyline.bindPopup("{% for property in properties %}\
-        <b>{{ property|capitalize }}</b>: {{ properties[property] }}<br>\
-        {% endfor %}<br>");
       {% endfor %}
 
       document.getElementById("file").onchange = function() {
@@ -186,7 +183,9 @@
           dataType: "json",
           success: function(results) {
             $("#score").text(results['lambda'] + ' wavelengths');
-            clearLines();
+            for (i = 0; i < polylines.length; i++) {
+              map.removeLayer(polylines[i]);
+            }
             for (const [key, value] of Object.entries(results['colors'])) {
               nodes.update({id: key, color: colors[value]});
               }
