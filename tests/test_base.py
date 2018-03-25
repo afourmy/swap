@@ -26,6 +26,13 @@ def count_objects(nodes, fibers, traffics):
     assert len(Traffic.query.all()) == traffics
 
 
+def test_simple(client):
+    assert client.get('/').status_code == 200
+    create_from_file(client, 'simple.xls')
+    count_objects(5, 4, 5)
+    swap_algorithm_test(client)
+
+
 def test_europe(client):
     assert client.get('/').status_code == 200
     create_from_file(client, 'europe.xls')
