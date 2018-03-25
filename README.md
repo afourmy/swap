@@ -4,6 +4,7 @@
 # SWAP
 
 SWAP is a solver for the Routing and Wavelength Assignment Problem (RWA).
+
 Two methods were implemented to solve the wavelength assignment problem:
 - Linear programming (optimal solution)
 - "Largest degree first" heuristic
@@ -26,12 +27,11 @@ Let's consider a situation with 5 optical switch in a line, and 5 traffic paths:
     
 ![Simple graph](readme/simple.png)
 
-## Naive strategy: assign wavelengths sequentially
+## Naive strategy: assign wavelengths in increasing order of path index
 
-We will assign wavelength sequentially (in increasing order of the traffic paths indices) and always choose the smallest available wavelength index.
+We will assign wavelength sequentially in increasing order of the traffic paths indices, and always choose the smallest available wavelength index.
  
 We write the n-th wavelength Ln (lambda x), and the n-th path Pn.
-
 - L1 is assigned to P1
 - We cannot reuse L1 for P2, because P1 and P2 have a link in common. Therefore, L2 is assigned to P2.
 - P3 uses all four fibers: we need a new wavelength L3.
@@ -39,7 +39,31 @@ We write the n-th wavelength Ln (lambda x), and the n-th path Pn.
 - Finally, P5 shares fibers with P2, P3 and P4: we need to use a new wavelength L4.
 
 With this naive strategy, **4 wavelengths** are required.
+The resulting assignment is the following:
 
+![Naive strategy](readme/simple_allocation1.png)
+
+## Another strategy: assign wavelengths in decreasing order of overlapping fibers
+
+Another strategy consists in assigning wavelengths sequentially in decreasing order of the number of other paths with overlapping fibers:
+- P3 shares fibers with all 4 paths
+- P2 and P5 share fibers with 3 paths.
+- P1 and P4 share fibers with 2 paths.
+
+Therefore, we assign wavelengths sequentially in the following order of paths: P3, P2, P5, P1, P4:
+- L1 is assigned to P3
+- L2 is assigned to P2 (common fiber with P3)
+- L3 is assigned to P5 (common fiber with P3 and P2)
+- L3 can be reassigned to P1 (common fiber with P3 and P2, but not P5)
+- L2 can be reassigned to P4 (common fiber with P3 and P5, but not P2)
+
+With this new strategy, **3 wavelengths** are required.
+The resulting assignment is the following:
+
+![Improved strategy](readme/simple_allocation2.png)
+
+The number of wavelengths required depends on the **order in which wavelengths are assigned** to the traffic paths.
+The Wavelength Assignment Problem aims at **minimizing the number of wavelengths**.
 
 # Algorithms
 
