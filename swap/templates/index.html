@@ -30,7 +30,7 @@
           <h4 class="modal-title">Transformed graph</h4>
         </div>
         <div class="modal-body">
-          <div id="network" style="height:400px; width:600px;"></div>
+          <div id="network" style="height:400px; width:100%;"></div>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-default" onclick="wavelengthAssignment('largest_degree_first')">Largest degree first</button>
@@ -62,7 +62,7 @@
         <div class="panel-body">
           <div class="btn-group-vertical btn-block" >
             <button type="button" class="btn btn-primary" onclick="routing()">Routing</button>
-            <button type="button" class="btn btn-primary" onclick="graphTransformation()">Transform graph</button>
+            <button type="button" class="btn btn-primary" data-toggle='modal' data-target='#graph-transformation'>Transform graph</button>
           </div>
         </div>
       </div>
@@ -236,6 +236,10 @@
           }
         });
       }
+
+  $('#graph-transformation').on('shown.bs.modal', function() {
+    graphTransformation();
+  });
 
     </script>
   </body>

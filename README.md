@@ -1,7 +1,7 @@
 [![Build Status](https://travis-ci.org/afourmy/SWAP.svg?branch=master)](https://travis-ci.org/afourmy/SWAP)
 [![Coverage Status](https://coveralls.io/repos/github/afourmy/SWAP/badge.svg?branch=master)](https://coveralls.io/github/afourmy/SWAP?branch=master)
 
-# SWAP: A Solver for the Wavelength Assignment Problem
+# SWAP
 
 SWAP is a solver for the Routing and Wavelength Assignment Problem (RWA).
 Two methods were implemented to solve the wavelength assignment problem:

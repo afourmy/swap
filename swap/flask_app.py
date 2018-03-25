@@ -79,7 +79,6 @@ def graph_coloring(algorithm):
                     (fiber.destination.longitude, fiber.destination.latitude)
                 )
     results['fiber_colors'], results['coords'] = colors_per_fiber, coords
-    print(colors_per_fiber)
     return jsonify(results)
 
 
