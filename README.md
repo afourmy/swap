@@ -84,14 +84,24 @@ Let's apply the graph transformation to our first example:
 
 We obtain the following result:
 
-<center><img src="readme/transformed_graph.png" width="404" height="249"/></center>
+<center><img src="readme/transformed_graph.png" width="606" height="332"/></center>
 
 
 
+
+
+
+## Linear programming
 
 ## "Largest degree first" heuristic
 
-## Linear programming
+The linear programming solution, while it always yields an optimal solution, is not scalable: it cannot be applied to large networks. The "Largest degree first" is a simple heuristic that assigns colors in decreasing order of vertex degree in the transformed graph:
+
+1. Find the uncolored vertex with largest degree
+2. Assign the minimum indexed color not yet used by adjacent vertices.
+3. Repeat step 1 and 2 until all vertices are colored.
+
+![LDF heuristic](readme/largest_degree_first.png)
 
 # Similar projects you might be interested in:
     
