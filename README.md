@@ -83,8 +83,9 @@ Let's apply the graph transformation to our first example:
 - The following couples of paths share a fiber: (P1, P2), (P1, P3), (P2, P3), (P2, P5), (P3, P4), (P3, P5), (P4, P5). Their associated vertices are connected with an edge in the transformed.
 
 We obtain the following result:
-    
-![Transformed graph](readme/transformed_graph.png)
+
+<img src="readme/transformed_graph.png" width="200" height="200" />
+
 
 
 
