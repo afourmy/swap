@@ -84,7 +84,7 @@ Let's apply the graph transformation to our first example:
 
 We obtain the following result:
 
-<img src="readme/transformed_graph.png" width="200" height="200" />
+<center><img src="readme/transformed_graph.png" width="404" height="249"/></center>
 
 
 
