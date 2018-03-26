@@ -70,6 +70,8 @@ The Wavelength Assignment Problem aims at **minimizing the number of wavelengths
 
 ## Routing with Linear Programming
 
+![Improved strategy](readme/routing.png)
+
 ## Reduction to a graph coloring problem
 
 ## "Largest degree first" heuristic
