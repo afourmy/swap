@@ -68,11 +68,25 @@ The Wavelength Assignment Problem aims at **minimizing the number of wavelengths
 
 # Algorithms
 
-## Routing with Linear Programming
+## Find the shortest path with linear programming
 
-![Improved strategy](readme/routing.png)
+![Shortest path routing](readme/routing.png)
 
 ## Reduction to a graph coloring problem
+
+We can reduce the Wavelength Assignment Problem to a graph coloring problem with a simple graph transformation:
+- Each traffic path is considered a vertex
+- If two traffic paths share (at least) one fiber, they are connected with an edge.
+
+Let's apply the graph transformation to our first example:
+- There are five vertices in the transformed graph
+- The following couples of paths share a fiber: (P1, P2), (P1, P3), (P2, P3), (P2, P5), (P3, P4), (P3, P5), (P4, P5). Their associated vertices are connected with an edge in the transformed.
+
+We obtain the following result:
+    
+![Transformed graph](readme/transformed_graph.png)
+
+
 
 ## "Largest degree first" heuristic
 
