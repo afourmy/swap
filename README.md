@@ -88,9 +88,9 @@ We obtain the following result:
 
 ## Find the optimal wavelength assignment with linear programming
 
-![LP1](readme/linear_programming1.png)
+![LP1](readme/linear_programming_1.png)
 
-![LP2](readme/linear_programming1.png)
+![LP2](readme/linear_programming_2.png)
 
 ## "Largest degree first" heuristic
 
