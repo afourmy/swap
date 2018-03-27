@@ -86,12 +86,11 @@ We obtain the following result:
 
 <p align="center"><img src="readme/transformed_graph.png" width="606" height="332"/></p>
 
-
-
-
-
-
 ## Find the optimal wavelength assignment with linear programming
+
+![LP1](readme/linear_programming1.png)
+
+![LP2](readme/linear_programming1.png)
 
 ## "Largest degree first" heuristic
 
