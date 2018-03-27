@@ -3,6 +3,14 @@
 
 # SWAP
 
+In optical networks, the Wavelength Divison Multiplexing (WDM) technology is used to increase the capacity of fibers to transmit information, by splitting a beam of light into different wavelengths, which travel simultaneously.
+
+![Wavelength Divison Multiplexing](readme/wdm.png)
+
+In an all-optical network, a wavelength can cross an optical switch without Optical-Electrical-Optical (OEO) conversion. While this is a step forward towards cheaper and "greener" networks, a trade-off is that there has to be an end-to-end "wavelength continuity": a wavelength stays the same from the source edge to the destination edge, and it cannot be used by different lightpaths on the same optical fiber.
+
+The wavelength allocation problem consists in finding the minimum number of wavelengths that are required, and how to allocate them to lightpaths.
+
 SWAP is a solver for the Routing and Wavelength Assignment Problem (RWA).
 
 ![SWAP: Europe](readme/swap.gif)
@@ -11,19 +19,9 @@ Two methods were implemented to solve the wavelength assignment problem:
 - Linear programming (optimal solution)
 - "Largest degree first" heuristic
 
-You can find a <a href="http://minto3.pythonanywhere.com" target="_blank">demo of SWAP</a> applied to the BBN Planet backbone in the USA:
+You can find a ![demo of SWAP](http://minto3.pythonanywhere.com) applied to the BBN Planet backbone in the USA:
 
 ![BBN Planet backbone](readme/bbnplanet.jpg)
-
-# The Wavelength Assignment Problem
-
-In optical networks, the Wavelength Divison Multiplexing (WDM) technology is used to increase the capacity of fibers to transmit information, by splitting a beam of light into different wavelengths, which travel simultaneously.
-
-![Wavelength Divison Multiplexing](readme/wdm.png)
-
-In an all-optical network, a wavelength can cross an optical switch without Optical-Electrical-Optical (OEO) conversion. While this is a step forward towards cheaper and "greener" networks, a trade-off is that there has to be an end-to-end "wavelength continuity": a wavelength stays the same from the source edge to the destination edge, and it cannot be used by different lightpaths on the same optical fiber.
-
-The wavelength allocation problem consists in finding the minimum number of wavelengths that are required, and how to allocate them to lightpaths.
 
 # A first example
 
