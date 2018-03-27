@@ -104,6 +104,10 @@ We obtain the following result:
 
 ![LP2](readme/linear_programming_2.png)
 
+![LP graph](readme/lp.png)
+
+![LP network](readme/lp_network.png)
+
 ## "Largest degree first" heuristic
 
 The linear programming solution, while it always yields an optimal solution, is not scalable: it cannot be applied to large networks. The "Largest degree first" is a simple heuristic that assigns colors in decreasing order of vertex degree in the transformed graph:
@@ -112,13 +116,16 @@ The linear programming solution, while it always yields an optimal solution, is 
 2. Assign the minimum indexed color not yet used by adjacent vertices.
 3. Repeat step 1 and 2 until all vertices are colored.
 
-![LDF heuristic](readme/largest_degree_first.png)
+![LDF heuristic graph](readme/largest_degree_first.png)
+
+![LDF heuristic network](readme/largest_degree_first_network.png)
 
 # Similar projects you might be interested in:
     
 - [A vendor-agnostic NMS for graphical network automation](https://github.com/afourmy/eNMS) 
 - [A 2D/3D visualization of the Traveling Salesman Problem main heuristics](https://github.com/afourmy/pyTSP)
 - [A vendor-agnostic NMS for network simulation and network optimization](https://github.com/afourmy/pyNMS) 
+- [A 3D visualization of the Internet topology Zoo with Google Earth](https://github.com/afourmy/3D-internet-zoo)
 
 # Installation
 
@@ -157,6 +164,8 @@ The linear programming solution, while it always yields an optimal solution, is 
 [Flask](http://flask.pocoo.org/ "Flask"): A microframework based on the Werkzeug toolkit and Jinja2 template engine.
 
 [Flask SQLAlchemy](http://flask-sqlalchemy.pocoo.org/ "Flask SQLAlchemy"): Adds support for SQLAlchemy to Flask.
+
+[Internet Topology Zoo](http://www.topology-zoo.org): A project to collect data network topologies from around the world..
 
 [Jquery](https://jquery.com/ "Jquery"): JavaScript library designed to simplify the client-side scripting of HTML.
 
