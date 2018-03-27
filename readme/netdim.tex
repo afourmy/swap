@@ -1,0 +1,73 @@
+\documentclass[10pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[french]{babel}
+\usepackage{amsmath,amsfonts,amssymb}
+
+\begin{document}
+
+
+Our network is a graph $(S, F)$ with $S$ a set of switches and $F$ a set of fibers.
+We associate a binary variable $ x_{ij} $ to each pair of adjacent switches $ (i, j) \in S^2 $, such that
+
+$$ x_{ij} = \left\{\begin{array}{ll}
+1 \text{ if the fiber $(i,j) \in F$ belongs to the path }\\
+0 \text{ otherwise}$$
+\end{array}\right.$$
+
+We note $ d_{ij} $ the  distance between $i$ and $j$. The length $L$ of a path is 
+$$\text{L} = \sum_{(i,j) \in F} d_{ij} x_{ij}$$
+
+Finding the shortest path comes down to minimizing $L$.
+\vspace{0.5cm}
+
+A few constraints must be introduced to ensure the flow conservation:
+
+\begin{itemize}
+  \item The difference between the outgoing traffic and the incoming traffic at the source $s$ must be equal to 1.
+$$ \sum_{j: (s,j) \in F} x_{sj} - \sum_{j: (j, s) \in F} x_{js}= 1$$
+  \item For any switch other than the source and the destination, the outgoing traffic and the incoming traffic must be equal (flow conservation).
+$$\sum_{j: (i,j) \in F} x_{ij} - \sum_{j: (j, i) \in F} x_{ji}= 0 \quad \forall i \in S \setminus \lbrace{s, d}\rbrace$$
+\end{itemize}
+
+Note: at the destination switch, we must have $$\sum_{j: (d,j) \in F} x_{dj} - \sum_{j: (j, d) \in F} x_{jd}= -1$$. However, it can be proven that this is a consequence of the two above-mentioned constraints combined: it doesn't need to be an explicit constraint.
+
+$$ \sum_{j: (s,j) \in F} x_{sj} - \sum_{j: (j, s) \in F} x_{js}= 1$$
+
+\vspace{1cm}
+\newpage
+
+We note $G(P, E)$ the transformed grah which nodes are traffic paths $p \in P$, and we define $\Lambda$ a set of wavelengths such that $\Lambda = \{\lambda_{1}, \lambda_{2}, ..., \lambda_{|\Lambda|}\}$.
+
+Given a wavelength $\lambda$ and a path $p$, we define the binary variables
+
+$$ x_{p}^{\lambda} = \left\{\begin{array}{ll}
+1 \text{ if $\lambda$ is assigned to $p$}\\
+0 \text{ otherwise}$$
+\end{array}\right.$$
+
+$$ y_{\lambda} = \left\{\begin{array}{ll}
+1 \text{ if $\lambda$ is used at least once}\\
+0 \text{ otherwise}$$
+\end{array}\right.$$
+
+Minimizing the number of assigned wavelengths in the optical network comes down to minimizing
+
+$$ \sum_{\lambda \in \Lambda} y_{\lambda}$$
+
+\vspace{0.5cm}
+
+To obtain a valid tour, we need to add the following constraints:
+
+\begin{itemize}
+  \item For every path, there must one and only one wavelength assigned. $$ \sum_{\lambda \in \Lambda} x_{p}^{\lambda} = 1 \quad \forall p \in P$$
+  \item If a wavelength $\lambda$ is not used ($y_{\lambda} = 0$), it cannot be assigned to any path ($x_{p}^{\lambda} = 0 \quad \forall p \in P$), and if it is used ($y_{\lambda} = 1$), it cannot be assigned to more than one path (i.e $ x_{p}^{\lambda} + x_{p'}^{\lambda} \leq 1 \quad \forall (p, p') \in P^2)$. In other words, 
+$$ x_{p}^{\lambda} + x_{p'}^{\lambda} \leq y_{\lambda} \quad \forall \lambda \in \Lambda, \quad \forall (p, p') \in P^2$$
+  \item Wavelengths are assigned sequentially, in increasing order of indices. $$ y_{\lambda_{k}} \geq y_{\lambda_{k+1}} \quad \forall k \in [\![ 1, |\Lambda| - 1 ]\!]$$
+  \item For every path $p$ and every wavelength $\lambda$, $x_{p}^{\lambda}$ and $y_{\lambda}$ are binary variables.
+$$y_{\lambda} \in \{0, 1\} \quad \forall \lambda \in \Lambda$$
+$$x_{p}^{\lambda} \in \{0, 1\} \quad \forall p \in P, \;\; \forall \lambda \in \Lambda$$
+\end{itemize}
+
+\end{document}
+

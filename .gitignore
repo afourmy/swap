@@ -10,6 +10,9 @@ __pycache__/
 env
 venv
 
+# latex
+*.gz
+
 # other
 .DS_Store
 

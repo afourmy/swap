@@ -84,14 +84,14 @@ Let's apply the graph transformation to our first example:
 
 We obtain the following result:
 
-<center><img src="readme/transformed_graph.png" width="606" height="332"/></center>
+<p align="center"><img src="readme/transformed_graph.png" width="606" height="332"/></p>
 
 
 
 
 
 
-## Linear programming
+## Find the optimal wavelength assignment with linear programming
 
 ## "Largest degree first" heuristic
 
