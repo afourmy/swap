@@ -28,6 +28,8 @@ A few constraints must be introduced to ensure the flow conservation:
 $$ \sum_{j: (s,j) \in F} x_{sj} - \sum_{j: (j, s) \in F} x_{js}= 1$$
   \item For any switch other than the source and the destination, the outgoing traffic and the incoming traffic must be equal (flow conservation).
 $$\sum_{j: (i,j) \in F} x_{ij} - \sum_{j: (j, i) \in F} x_{ji}= 0 \quad \forall i \in S \setminus \lbrace{s, d}\rbrace$$
+  \item the $x_{ij}$ are binary variables.
+$$x_{ij} \in \{0, 1\} \quad \forall (i, j) \in F$$
 \end{itemize}
 
 Note: at the destination switch, we must have $$\sum_{j: (d,j) \in F} x_{dj} - \sum_{j: (j, d) \in F} x_{jd}= -1$$. However, it can be proven that this is a consequence of the two above-mentioned constraints combined: it doesn't need to be an explicit constraint.

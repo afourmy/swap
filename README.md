@@ -5,11 +5,15 @@
 
 SWAP is a solver for the Routing and Wavelength Assignment Problem (RWA).
 
+![SWAP: Europe](readme/swap.gif)
+
 Two methods were implemented to solve the wavelength assignment problem:
 - Linear programming (optimal solution)
 - "Largest degree first" heuristic
 
-![SWAP: Europe](readme/swap.gif)
+You can find a <a href="http://minto3.pythonanywhere.com" target="_blank">demo of SWAP</a> applied to the BBN Planet backbone in the USA:
+
+![BBN Planet backbone](readme/bbnplanet.jpg)
 
 # The Wavelength Assignment Problem
 
@@ -70,7 +74,9 @@ The Wavelength Assignment Problem aims at **minimizing the number of wavelengths
 
 ## Find the shortest path with linear programming
 
-![Shortest path routing](readme/routing.png)
+![SP1](readme/routing1.png)
+
+![SP2](readme/routing2.png)
 
 ## Reduction to a graph coloring problem
 
@@ -152,7 +158,7 @@ The linear programming solution, while it always yields an optimal solution, is 
 
 [Leaflet-polyline](https://github.com/bbecquet/Leaflet.PolylineDecorator "Leaflet polyline"): A leaflet plugin to define patterns on Polylines.
 
-[Linear Programming and Algorithms for Communication Networks by Eiji Oki.](https://www.amazon.com/Linear-Programming-Algorithms-Communication-Networks/dp/1466552638)
+[Linear Programming and Algorithms for Communication Networks](https://www.amazon.com/Linear-Programming-Algorithms-Communication-Networks/dp/1466552638) by Eiji Oki.
 
 [Vis](http://visjs.org): A dynamic, browser based JavaScript visualization library.
 
