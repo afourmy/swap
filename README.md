@@ -19,7 +19,7 @@ Two methods were implemented to solve the wavelength assignment problem:
 - Linear programming (optimal solution)
 - "Largest degree first" heuristic
 
-You can find a ![demo of SWAP](http://minto3.pythonanywhere.com) applied to the BBN Planet backbone in the USA:
+You can find a [demo of SWAP](http://minto3.pythonanywhere.com) applied to the BBN Planet backbone in the USA:
 
 ![BBN Planet backbone](readme/bbnplanet.jpg)
 
@@ -69,6 +69,14 @@ The number of wavelengths required depends on the **order in which wavelengths a
 The Wavelength Assignment Problem aims at **minimizing the number of wavelengths**.
 
 # Algorithms
+
+To solve the RWA, we consider that the traffic paths are known __a priori__, and that they all use the **shortest distance path**. This is known as the **Static Lightpath Establishment Routinw and Wavelength Asssignment** problem, or SLE RWA.
+The SLE RWA is NP-complete, it can be reduced to a graph coloring problem with a simple graph transformation, as demonstrated below.
+
+To solver the SLE RWA, we will go through the following steps:
+  - **Routing**: for each path, we must find the shortest path. Instead of using Dijkstra algorithm (too easy), SWAP uses the **integer linear programming formulation of the shortest path** problem for the routing process. The metric used to find the shortest path is the **geographic distance**, calculated with the **Haversine formula**.
+  - **Graph transformation**: we create a new graph based on the optical graph to turn the wavelength assignment process into a **graph coloring problem**.
+  - **Wavelength assignment**: finally, we propose two algorithms to assign wavelengths: linear programming and the "Largest Degree First" heuristic.
 
 ## Find the shortest path with linear programming
 
