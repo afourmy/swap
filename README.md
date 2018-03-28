@@ -70,7 +70,7 @@ The Wavelength Assignment Problem aims at **minimizing the number of wavelengths
 
 # Algorithms
 
-To solve the RWA, we consider that the traffic paths are known __a priori__, and that they all use the **shortest distance path**. This is called the **Static Lightpath Establishment Routing and Wavelength Asssignment** problem (SLE RWA).
+To solve the RWA, we consider that the traffic paths are known __a priori__, and that they all use the **shortest distance path**. This is called the **Static Lightpath Establishment Routing and Wavelength Assignment** problem (SLE RWA).
 
 The SLE RWA is NP-complete, it can be reduced to a graph coloring problem with a simple graph transformation, as demonstrated below.
 
