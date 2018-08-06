@@ -133,30 +133,31 @@ The linear programming solution, while it always yields an optimal solution, is 
 ### (Optional) Set up a [virtual environment](https://docs.python.org/3/library/venv.html) 
 
 ### 1. Get the code
-    git clone https://github.com/afourmy/SWAP.git
-    cd SWAP
+    git clone https://github.com/afourmy/swap.git
+    cd swap
 
 ### 2. Install requirements 
     pip install -r requirements.txt
 
-### 3. Run the code
-    cd swap
-    python flask_app.py
+### 3. Set the FLASK_APP environment variable
+    (Windows) set FLASK_APP=app.py
+    (Unix) export FLASK_APP=app.py
 
-### 4. Go the http://127.0.0.1:5000/
+### 4. Run the application
+    flask run --host=0.0.0.0
 
-# Run SWAP in a docker container
+### 5. Go the http://127.0.0.1:5000/
 
-### 1. Fetch the image on dockerhub
-    docker pull afourmy/swap
+### 6. Create an account and log in
 
-### 2. Find the name of the docker image
-    docker images
+# Run swap in a docker container
 
-### 3. Run the image on port 5000
-    docker run -p 5000:5000 image_name
+### 1. Download & run the container
+    docker run -d -p 5000:5000 --name swap --restart always afourmy/swap
 
-### 4. Go the http://127.0.0.1:5000/
+### 2. Go to http://127.0.0.1:5000
+
+### 3. Create an account and log in
 
 # Credits
 
