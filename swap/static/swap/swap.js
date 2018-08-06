@@ -50,14 +50,18 @@ function switchLayer(layer) {
 }
 
 function routing() {
-  $("#routing-button").hide();
-  $("#wap-button").show();
   $.ajax({
     type: "POST",
     url: "/routing",
     dataType: "json",
-    success: function(graph) {}
+    success: function(graph) {
+      $("#action-button").text('Transform graph');
+    }
   });
+}
+
+function transformGraph() {
+  $('#graph-transformation').modal('show');
 }
 
 document.getElementById("file").onchange = function() {
@@ -141,6 +145,7 @@ function partial(func) {
 }
 
 var action = {
+  'Transform graph': transformGraph,
   'Routing': routing,
   'Open Street Map': partial(switchLayer, 'Open Street Map'),
   'Google Maps': partial(switchLayer, 'Google Maps'),
