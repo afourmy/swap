@@ -1,11 +1,11 @@
 from collections import OrderedDict
-from database import Base
 from math import asin, cos, radians, sin, sqrt
 from sqlalchemy import Column, ForeignKey, Integer, String, Float
 from sqlalchemy.orm import backref, relationship
 
+from swap import db
 
-class Object(Base):
+class Object(db.Model):
 
     __tablename__ = 'Object'
 

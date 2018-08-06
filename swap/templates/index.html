@@ -20,6 +20,8 @@
   <script src="{{ url_for('static', filename='leaflet-polyline/leaflet.polyline.js') }}"></script>
   <!-- Vis -->
   <script src="{{ url_for('static', filename='vis/vis.js') }}"></script>
+  <!-- Alertify -->
+  <link href="{{ url_for('static', filename='alertifyjs/css/alertify.min.css') }}" rel="stylesheet">
   </head>
   <div id="graph-transformation" class="modal fade bs-example-modal-lg" tabindex="-1" role="dialog" aria-hidden="true">
     <div class="modal-dialog modal-lg">
@@ -54,15 +56,26 @@
                 <span class="caret"></span>
               </button>
               <ul class="dropdown-menu">
-                <li><a onclick="switch_layer('osm')"> Open Street Map </a></li>
-                <li><a onclick="switch_layer('gm')"> Google Maps </a></li>
-                <li><a onclick="switch_layer('nasa')"> NASA </a></li>
+                <li><a onclick="switchLayer('osm')"> Open Street Map </a></li>
+                <li><a onclick="switchLayer('gm')"> Google Maps </a></li>
+                <li><a onclick="switchLayer('nasa')"> NASA </a></li>
               </ul>
             </div> 
           </div>
         </div>
       </div>
     </div>
+    <ul id="contextMenu" class="dropdown-menu" role="menu">
+      <li><a tabindex="-1" href="#">Routing</a></li>
+      <li class="dropdown-submenu">
+        <a class="test" tabindex="-1" href="#">Tile layer<span class="caret-right"></span></a>
+        <ul class="dropdown-menu pull-right">
+          <li><a tabindex="-1" href="#">Open Street Map</a></li>
+          <li><a tabindex="-1" href="#">Google Maps</a></li>
+          <li><a tabindex="-1" href="#">NASA</a></li>
+        </ul>
+      </li>
+    </ul>
     <div class="panel-group" style="z-index:500; position: absolute; top: 20px; right:20px;">
       <form id="fileform" class="form-horizontal form-label-left" enctype="multipart/form-data" method="post" >
         <div style="padding-bottom:5px;">
@@ -73,6 +86,8 @@
       </form>
     </div>
     <div id="map">
+    <!-- Alertify -->
+    <script src="{{ url_for('static', filename='alertifyjs/alertify.min.js') }}"></script>
     <script>
       var layers = {
         'osm': 'http://{s}.tile.osm.org/{z}/{x}/{y}.png',
@@ -84,12 +99,6 @@
       var osm_layer = L.tileLayer(layers['osm']);
       map.addLayer(osm_layer);
       var current_layer = osm_layer;
-
-      function switch_layer(layer){
-        map.removeLayer(current_layer);
-        current_layer = L.tileLayer(layers[layer]);
-        map.addLayer(current_layer);
-        }
 
       var icon_switch = L.icon({
         iconUrl: 'static/images/optical_switch.gif',
@@ -118,10 +127,10 @@
         }
       }
 
-      map.on("contextmenu", function(e) {
+      map.on("click", function(e) {
         unselectLines();
-        e.preventDefault();
-        });
+      });
+      
 
       {% for link, properties in objects['Link'].items() %}
         var pointA = new L.LatLng({{ link['source']['latitude'] }}, {{ link['source']['longitude'] }});
@@ -158,87 +167,8 @@
           });
         {% endif %}
       {% endfor %}
-
-      document.getElementById("file").onchange = function() {
-        $("#fileform").submit();
-      };
-
-      function routing(){
-        $("#routing-button").hide();
-        $("#wap-button").show();
-        $.ajax({
-          type: "POST",
-          url: "/routing",
-          dataType: "json",
-          success: function(graph) {}
-        });
-      }
-
-      var colors = ['red', '#08f', '#0c0', '#f80', 'purple', 'pink', 'yellow'];
-      function wavelengthAssignment(algorithm){
-        $.ajax({
-          type: "POST",
-          url: "/wavelength_assignment/" + algorithm,
-          dataType: "json",
-          success: function(results) {
-            $("#score").text(results['lambda'] + ' wavelengths');
-            for (i = 0; i < polylines.length; i++) {
-              map.removeLayer(polylines[i]);
-            }
-            for (const [key, value] of Object.entries(results['colors'])) {
-              nodes.update({id: key, color: colors[value]});
-              }
-            for (const [key, value] of Object.entries(results['fiber_colors'])) {
-              var geoJson = {
-                "type": "FeatureCollection",
-                "features": [
-                  {"type": "Feature", "properties": {"lines": value},
-                  "geometry": {"type": "LineString", "coordinates": [
-                    [...results['coords'][key][0]], [...results['coords'][key][1]],
-                  ]}}]
-              };
-
-              var lineWeight = 5;
-              var lineSegment, linesOnSegment, segmentCoords, segmentWidth;
-              geoJson.features.forEach(function(lineSegment) {
-                segmentCoords = 
-                linesOnSegment = lineSegment.properties.lines;
-                segmentWidth = linesOnSegment.length * (lineWeight + 1);
-
-                for(var j = 0; j < linesOnSegment.length; j++) {
-                  L.polyline(L.GeoJSON.coordsToLatLngs(lineSegment.geometry.coordinates, 0), 
-                    {color: colors[linesOnSegment[j]], weight: lineWeight,
-                    opacity: 1, offset: j * (lineWeight + 1) - (segmentWidth / 2) + ((lineWeight + 1) / 2)
-                  }).addTo(map);
-                }
-              });
-            }
-          }
-        });
-      }
-
-      var nodes = new vis.DataSet();
-      function graphTransformation(algorithm){
-        $.ajax({
-          type: "POST",
-          url: "/graph_transformation",
-          dataType: "json",
-          success: function(graph){
-            $('#graph-transformation').modal('show');
-            nodes.add(graph['nodes']);
-            var edges = new vis.DataSet(graph['links']);
-            const container = $("#network");
-            var data = {nodes: nodes, edges: edges};
-            var options = {};
-            const network = new vis.Network(container[0], data, options);
-          }
-        });
-      }
-
-  $('#graph-transformation').on('shown.bs.modal', function() {
-    graphTransformation();
-  });
-
     </script>
+    <!-- Swap -->
+    <script src="{{ url_for('static', filename='swap/swap.js') }}"></script>
   </body>
 </html>

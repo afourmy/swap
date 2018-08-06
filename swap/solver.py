@@ -1,7 +1,8 @@
 from collections import defaultdict
 import numpy as np
 from cvxopt import matrix, glpk
-from models import Node, Fiber, Traffic
+
+from swap.models import Node, Fiber, Traffic
 
 
 class Solver:
