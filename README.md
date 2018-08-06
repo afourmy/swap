@@ -45,6 +45,8 @@ The resulting assignment is the following:
 
 ![Naive strategy](readme/simple_allocation1.png)
 
+(image from ![this file](https://oki.ice.uec.ac.jp/files/seigo_lp_crc.pdf) in [Linear Programming and Algorithms for Communication Networks](https://www.amazon.com/Linear-Programming-Algorithms-Communication-Networks/dp/1466552638) by Eiji Oki.)
+
 ## Another strategy: assign wavelengths in decreasing order of overlapping fibers
 
 Another strategy consists in assigning wavelengths sequentially in decreasing order of the number of other paths with overlapping fibers:
@@ -63,6 +65,8 @@ With this new strategy, **3 wavelengths** are required.
 The resulting assignment is the following:
 
 ![Improved strategy](readme/simple_allocation2.png)
+
+(image from ![this file](https://oki.ice.uec.ac.jp/files/seigo_lp_crc.pdf) in [Linear Programming and Algorithms for Communication Networks](https://www.amazon.com/Linear-Programming-Algorithms-Communication-Networks/dp/1466552638) by Eiji Oki.)
 
 The number of wavelengths required depends on the **order in which wavelengths are assigned** to the traffic paths.
 
