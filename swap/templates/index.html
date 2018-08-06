@@ -44,27 +44,6 @@
   </div>
   <body>
     <strong><p class="btn btn-danger score" style="min-width:100px; z-index:500; position: absolute; left:45vw; top:10px;" id="score">Result</p></strong>
-    <div class="panel-group" style="z-index:500; position: absolute; top: 20px; left:20px;">
-      <div class="panel panel-primary panel-transparent">
-        <div class="panel-heading" style="text-align: center;">SWAP</div>
-        <div class="panel-body">
-          <div class="btn-group-vertical btn-block" >
-            <button id="routing-button" type="button" class="btn btn-primary" onclick="routing()" style="width: 150px;">Routing</button>
-            <button id="wap-button" type="button" class="btn btn-primary" data-toggle='modal' data-target='#graph-transformation' style="width: 150px; display: none;">Transform graph</button>
-            <div class="btn-group">
-              <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">Tile layer
-                <span class="caret"></span>
-              </button>
-              <ul class="dropdown-menu">
-                <li><a onclick="switchLayer('osm')"> Open Street Map </a></li>
-                <li><a onclick="switchLayer('gm')"> Google Maps </a></li>
-                <li><a onclick="switchLayer('nasa')"> NASA </a></li>
-              </ul>
-            </div> 
-          </div>
-        </div>
-      </div>
-    </div>
     <ul id="contextMenu" class="dropdown-menu" role="menu">
       <li><a tabindex="-1" href="#">Routing</a></li>
       <li class="dropdown-submenu">
