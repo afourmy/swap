@@ -28,6 +28,7 @@ You can find a [demo of SWAP](http://minto3.pythonanywhere.com) applied to the B
 Let's consider a situation with 5 optical switch in a line, and 5 traffic paths:
     
 ![Simple graph](readme/simple.png)
+(image from [Linear Programming and Algorithms for Communication Networks](https://www.amazon.com/Linear-Programming-Algorithms-Communication-Networks/dp/1466552638) by Eiji Oki)
 
 ## Naive strategy: assign wavelengths in increasing order of path index
 
@@ -44,8 +45,7 @@ With this naive strategy, **4 wavelengths** are required.
 The resulting assignment is the following:
 
 ![Naive strategy](readme/simple_allocation1.png)
-
-(image from [Linear Programming and Algorithms for Communication Networks](https://www.amazon.com/Linear-Programming-Algorithms-Communication-Networks/dp/1466552638) by Eiji Oki.)
+(image from [Linear Programming and Algorithms for Communication Networks](https://www.amazon.com/Linear-Programming-Algorithms-Communication-Networks/dp/1466552638) by Eiji Oki)
 
 ## Another strategy: assign wavelengths in decreasing order of overlapping fibers
 
@@ -65,8 +65,7 @@ With this new strategy, **3 wavelengths** are required.
 The resulting assignment is the following:
 
 ![Improved strategy](readme/simple_allocation2.png)
-
-(image from [Linear Programming and Algorithms for Communication Networks](https://www.amazon.com/Linear-Programming-Algorithms-Communication-Networks/dp/1466552638) by Eiji Oki.)
+(image from [Linear Programming and Algorithms for Communication Networks](https://www.amazon.com/Linear-Programming-Algorithms-Communication-Networks/dp/1466552638) by Eiji Oki)
 
 The number of wavelengths required depends on the **order in which wavelengths are assigned** to the traffic paths.
 
