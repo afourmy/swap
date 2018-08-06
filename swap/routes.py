@@ -1,17 +1,17 @@
 from collections import defaultdict, OrderedDict
-from flask import Blueprint, Flask, jsonify, render_template, request, session
+from flask import Blueprint, jsonify, render_template, request, session
 from werkzeug.utils import secure_filename
 from xlrd import open_workbook
 
-from swap import db, solver
+from swap import db
 from swap.models import (
     Fiber,
     Link,
     Node,
+    Object,
     object_class,
     object_factory,
-    Traffic,
-    Object
+    Traffic
 )
 from swap.solver import Solver
 
@@ -26,7 +26,6 @@ def allowed_file(name, allowed_extensions):
 
 @swap.route('/', methods=['GET', 'POST'])
 def index():
-    print(solver.__dict__)
     if request.method == 'POST':
         for model in (Fiber, Traffic, Link, Node, Object):
             model.query.delete()

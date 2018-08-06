@@ -5,12 +5,19 @@ from sqlalchemy.orm import backref, relationship
 
 from swap import db
 
+
 class Object(db.Model):
 
     __tablename__ = 'Object'
 
     id = Column(Integer, primary_key=True)
     name = Column(String(120), unique=True)
+    type = Column(String)
+
+    __mapper_args__ = {
+        'polymorphic_identity': 'Object',
+        'polymorphic_on': type
+    }
 
     def __init__(self, **kwargs):
         for property, value in kwargs.items():
@@ -23,6 +30,10 @@ class Object(db.Model):
 class Node(Object):
 
     __tablename__ = 'Node'
+
+    __mapper_args__ = {
+        'polymorphic_identity': 'Node',
+    }
 
     properties = (
         'name',

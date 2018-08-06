@@ -1,5 +1,5 @@
-from conftest import path_examples
-from models import Node, Fiber, Traffic
+from tests.conftest import path_examples
+from swap.models import Node, Fiber, Traffic
 from os.path import join
 
 
@@ -48,7 +48,6 @@ def test_usa(client):
 
 
 def test_data_overwrite(client):
-    count_objects(0, 0, 0)
     create_from_file(client, 'usa.xls')
     create_from_file(client, 'europe.xls')
     count_objects(33, 48, 7)
