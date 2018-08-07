@@ -53,6 +53,10 @@ class Node(Object):
         adj.extend([(x.destination, x) for x in self.lower_edges])
         return filter(lambda a: a[1].subtype == type, adj)
 
+    @property
+    def serialize(self):
+        return {prop: getattr(self, prop) for prop in self.properties}
+
 
 class Link(Object):
 
@@ -99,6 +103,12 @@ class Link(Object):
     def __init__(self, **kwargs):
         super(Link, self).__init__(**kwargs)
         self.distance = 1
+    @property
+    def serialize(self):
+        properties = {prop: getattr(self, prop) for prop in self.properties}
+        properties['source'] = self.source.serialize
+        properties['destination'] = self.destination.serialize
+        return properties
 
 
 class Fiber(Link):

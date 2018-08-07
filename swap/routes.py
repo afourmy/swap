@@ -1,4 +1,4 @@
-from collections import defaultdict, OrderedDict
+from collections import defaultdict
 from flask import Blueprint, jsonify, render_template, request, session
 from werkzeug.utils import secure_filename
 from xlrd import open_workbook
@@ -41,17 +41,11 @@ def index():
                     kwargs['type'] = obj_type
                     object_factory(db, **kwargs)
                 db.session.commit()
-    objects = {
-        obj_type: {
-            obj: OrderedDict([
-                (property, getattr(obj, property))
-                for property in cls.properties
-            ])
-            for obj in cls.query.all()
-        }
-        for obj_type, cls in (('Node', Node), ('Link', Link))
+    network = {
+        obj_type: [obj.serialize for obj in cls.query.all()]
+        for obj_type, cls in (('node', Node), ('link', Link))
     }
-    return render_template('index.html', objects=objects)
+    return render_template('index.html', network=network)
 
 
 @swap.route('/routing', methods=['POST'])

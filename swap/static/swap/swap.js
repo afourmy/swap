@@ -1,3 +1,57 @@
+function createOpticalSwitch(oxc) {
+  var marker = L.marker([oxc.latitude, oxc.longitude]);
+  marker.bindPopup(`
+    <b>Name</b>: ${oxc.name}<br>\
+    <b>Longitude</b>: ${oxc.longitude}<br>\
+    <b>Latitude</b>: ${oxc.latitude}<br>\
+  `);
+  marker.bindTooltip(oxc.name, {permanent: false, });
+  marker.setIcon(icon_switch), 
+  marker.addTo(map);
+}
+
+function createLink(link) {
+  var pointA = new L.LatLng(link.source.latitude, link.source.longitude);
+  var pointB = new L.LatLng(link.destination.latitude, link.destination.longitude);
+  var pointList = [pointA, pointB];
+  var polyline = new L.Polyline(pointList, {
+    color: link.subtype === 'fiber' ? '#0000FF' : '#333333',
+    weight: 3, opacity: 1, smoothFactor: 1 
+  });
+  polyline.addTo(map);
+  polylines.push(polyline);
+  if (link.subtype == 'fiber') {
+    link_name_to_polyline[link.name] = polyline;
+    polyline.bindPopup("");
+  } else {
+    polyline.on('click', function() {
+      unselectLines();
+      $.ajax({
+        type: "POST",
+        url: `/path_${link.name}`,
+        dataType: "json",
+        success: function(data){
+          for (i = 0; i < data.length; i++) {
+            polyline = link_name_to_polyline[data[i]];
+            selectedLines.push(polyline);
+            polyline.setStyle({color: 'red'});
+          }
+        }
+      });
+    });
+  }
+}
+
+(function() {
+  for (var s = 0; s < network.node.length; s++) {
+    createOpticalSwitch(network.node[s]);
+  }
+  for (var l = 0; l < network.link.length; l++) {
+    createLink(network.link[l]);
+  }
+})();
+
+
 var layers = {
   'Open Street Map': 'http://{s}.tile.osm.org/{z}/{x}/{y}.png',
   'Google Maps': 'http://mt0.google.com/vt/lyrs=y&hl=en&x={x}&y={y}&z={z}&s=Ga',

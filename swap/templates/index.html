@@ -68,6 +68,10 @@
     <!-- Alertify -->
     <script src="{{ url_for('static', filename='alertifyjs/alertify.min.js') }}"></script>
     <script>
+      var network = {{ network|tojson|safe }};
+      console.log(network);
+    </script>
+    <script>
       var layers = {
         'osm': 'http://{s}.tile.osm.org/{z}/{x}/{y}.png',
         'gm': 'http://mt0.google.com/vt/lyrs=y&hl=en&x={x}&y={y}&z={z}&s=Ga',
@@ -86,15 +90,7 @@
         popupAnchor: [8, -5] // point from which the popup should open relative to the iconAnchor
         });
 
-      {% for properties in objects['Node'].values() %}  
-        var marker = L.marker([{{ properties['latitude'] }}, {{ properties['longitude'] }}]);
-        marker.bindPopup("{% for property in properties %}\
-        <b>{{ property|capitalize }}</b>: {{ properties[property] }}<br>\
-        {% endfor %}<br>");
-        marker.bindTooltip("{{ properties['name'] }}", {permanent: false, });
-        marker.setIcon(icon_switch), 
-        marker.addTo(map);
-      {% endfor %}
+
 
       var polylines = [];
           selectedLines = [];
@@ -111,41 +107,7 @@
       });
       
 
-      {% for link, properties in objects['Link'].items() %}
-        var pointA = new L.LatLng({{ link['source']['latitude'] }}, {{ link['source']['longitude'] }});
-        var pointB = new L.LatLng({{ link['destination']['latitude'] }}, {{ link['destination']['longitude'] }});
-        var pointList = [pointA, pointB];
 
-        var polyline = new L.Polyline(pointList, {
-          color: {% if link.subtype == 'fiber' %} '#0000FF' {% else %} '#333333' {% endif %},
-          weight: 3, opacity: 1, smoothFactor: 1 
-          });
-
-        polyline.addTo(map);
-        polylines.push(polyline);
-        {% if link.subtype == 'fiber' %}
-          link_name_to_polyline["{{ link.name }}"] = polyline;
-          polyline.bindPopup("{% for property in properties %}\
-          <b>{{ property|capitalize }}</b>: {{ properties[property] }}<br>\
-          {% endfor %}<br>");
-        {% else %}
-          polyline.on('click', function() {
-            unselectLines();
-            $.ajax({
-              type: "POST",
-              url: "/path_" + "{{ link.name }}",
-              dataType: "json",
-              success: function(data){
-                for (i = 0; i < data.length; i++) {
-                  polyline = link_name_to_polyline[data[i]];
-                  selectedLines.push(polyline);
-                  polyline.setStyle({color: 'red'});
-                }
-              }
-            });
-          });
-        {% endif %}
-      {% endfor %}
     </script>
     <!-- Swap -->
     <script src="{{ url_for('static', filename='swap/swap.js') }}"></script>
