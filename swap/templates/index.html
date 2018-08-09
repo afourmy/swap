@@ -67,48 +67,7 @@
     <div id="map">
     <!-- Alertify -->
     <script src="{{ url_for('static', filename='alertifyjs/alertify.min.js') }}"></script>
-    <script>
-      var network = {{ network|tojson|safe }};
-      console.log(network);
-    </script>
-    <script>
-      var layers = {
-        'osm': 'http://{s}.tile.osm.org/{z}/{x}/{y}.png',
-        'gm': 'http://mt0.google.com/vt/lyrs=y&hl=en&x={x}&y={y}&z={z}&s=Ga',
-        'nasa': 'http://tileserver.maptiler.com/nasa/{z}/{x}/{y}.jpg'
-        };
-
-      var map = L.map('map', { zoomControl:false }).setView([48, 2], 5);
-      var osm_layer = L.tileLayer(layers['osm']);
-      map.addLayer(osm_layer);
-      var current_layer = osm_layer;
-
-      var icon_switch = L.icon({
-        iconUrl: 'static/images/optical_switch.gif',
-        iconSize: [20, 20], // size of the icon
-        iconAnchor: [9, 6], // point of the icon which will correspond to marker's location
-        popupAnchor: [8, -5] // point from which the popup should open relative to the iconAnchor
-        });
-
-
-
-      var polylines = [];
-          selectedLines = [];
-          link_name_to_polyline = {};
-
-      function unselectLines(){
-        for (i = 0; i < selectedLines.length; i++) {
-          selectedLines[i].setStyle({color: '#0000FF'});
-        }
-      }
-
-      map.on("click", function(e) {
-        unselectLines();
-      });
-      
-
-
-    </script>
+    <script>  var network = {{ network|tojson|safe }};  </script>
     <!-- Swap -->
     <script src="{{ url_for('static', filename='swap/swap.js') }}"></script>
   </body>

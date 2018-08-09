@@ -1,0 +1,4 @@
+**/*.min.js
+swap/static/vis/vis.js
+swap/static/leaflet
+swap/static/leaflet-polyline

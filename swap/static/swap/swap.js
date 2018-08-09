@@ -1,38 +1,128 @@
+/* eslint linebreak-style: ['error', 'windows'] */
+/* global L network vis */
+
+let layers = {
+  'Open Street Map': 'http://{s}.tile.osm.org/{z}/{x}/{y}.png',
+  'Google Maps': 'http://mt0.google.com/vt/lyrs=y&hl=en&x={x}&y={y}&z={z}&s=Ga',
+  'NASA': 'http://tileserver.maptiler.com/nasa/{z}/{x}/{y}.jpg',
+};
+
+let map = L.map('map', {zoomControl: false}).setView([48, 2], 5);
+let osmLayer = L.tileLayer(layers['Open Street Map']);
+let currentLayer = osmLayer;
+let iconSwitch = L.icon({
+  iconUrl: 'static/images/optical_switch.gif',
+  iconSize: [20, 20],
+  iconAnchor: [9, 6],
+  popupAnchor: [8, -5],
+});
+let colors = ['red', '#08f', '#0c0', '#f80', 'purple', 'pink', 'yellow'];
+let polylines = [];
+let selectedLines = [];
+let linkNameToPolyline = {};
+let nodes = new vis.DataSet();
+let action = {
+  'Transform graph': transformGraph,
+  'Routing': routing,
+  'Open Street Map': partial(switchLayer, 'Open Street Map'),
+  'Google Maps': partial(switchLayer, 'Google Maps'),
+  'NASA': partial(switchLayer, 'NASA'),
+};
+let lineWeight = 5;
+
+$('#graph-transformation').on('shown.bs.modal', function() {
+  graphTransformation();
+});
+
+(function() {
+  map.on('click', function() {
+    unselectLines();
+  });
+  map.addLayer(osmLayer);
+  document.getElementById('file').onchange = function() {
+    $('#fileform').submit();
+  };
+
+  $('.dropdown-submenu a.test').on('click', function(e) {
+    $(this).next('ul').toggle();
+    e.stopPropagation();
+    e.preventDefault();
+  });
+
+  for (let s = 0; s < network.node.length; s++) {
+    createOpticalSwitch(network.node[s]);
+  }
+  for (let l = 0; l < network.link.length; l++) {
+    createLink(network.link[l]);
+  }
+})();
+
+/**
+ * Returns partial function
+ * @param {function} func - any function
+ * @return {function}
+ */
+function partial(func) {
+  let args = Array.prototype.slice.call(arguments, 1);
+  return function() {
+    let allArguments = args.concat(Array.prototype.slice.call(arguments));
+    return func.apply(this, allArguments);
+  };
+}
+
+function unselectLines() {
+  for (let i = 0; i < selectedLines.length; i++) {
+    selectedLines[i].setStyle({color: '#0000FF'});
+  }
+}
+
+/**
+ * @param {oxc} oxc - Optical switch object
+ */
 function createOpticalSwitch(oxc) {
-  var marker = L.marker([oxc.latitude, oxc.longitude]);
+  let marker = L.marker([oxc.latitude, oxc.longitude]);
   marker.bindPopup(`
     <b>Name</b>: ${oxc.name}<br>\
     <b>Longitude</b>: ${oxc.longitude}<br>\
     <b>Latitude</b>: ${oxc.latitude}<br>\
   `);
-  marker.bindTooltip(oxc.name, {permanent: false, });
-  marker.setIcon(icon_switch), 
+  marker.bindTooltip(oxc.name, {permanent: false});
+  marker.setIcon(iconSwitch);
   marker.addTo(map);
 }
 
+/**
+ * @param {link} link - A link object
+ */
 function createLink(link) {
-  var pointA = new L.LatLng(link.source.latitude, link.source.longitude);
-  var pointB = new L.LatLng(link.destination.latitude, link.destination.longitude);
-  var pointList = [pointA, pointB];
-  var polyline = new L.Polyline(pointList, {
+  let pointA = new L.LatLng(
+    link.source.latitude,
+    link.source.longitude
+  );
+  let pointB = new L.LatLng(
+    link.destination.latitude,
+    link.destination.longitude
+  );
+  let pointList = [pointA, pointB];
+  let polyline = new L.Polyline(pointList, {
     color: link.subtype === 'fiber' ? '#0000FF' : '#333333',
-    weight: 3, opacity: 1, smoothFactor: 1 
+    weight: 3, opacity: 1, smoothFactor: 1
   });
   polyline.addTo(map);
   polylines.push(polyline);
-  if (link.subtype == 'fiber') {
-    link_name_to_polyline[link.name] = polyline;
-    polyline.bindPopup("");
+  if (link.subtype === 'fiber') {
+    linkNameToPolyline[link.name] = polyline;
+    polyline.bindPopup('');
   } else {
     polyline.on('click', function() {
       unselectLines();
       $.ajax({
-        type: "POST",
+        type: 'POST',
         url: `/path_${link.name}`,
-        dataType: "json",
+        dataType: 'json',
         success: function(data){
-          for (i = 0; i < data.length; i++) {
-            polyline = link_name_to_polyline[data[i]];
+          for (let i = 0; i < data.length; i++) {
+            polyline = linkNameToPolyline[data[i]];
             selectedLines.push(polyline);
             polyline.setStyle({color: 'red'});
           }
@@ -42,28 +132,39 @@ function createLink(link) {
   }
 }
 
-(function() {
-  for (var s = 0; s < network.node.length; s++) {
-    createOpticalSwitch(network.node[s]);
-  }
-  for (var l = 0; l < network.link.length; l++) {
-    createLink(network.link[l]);
-  }
-})();
+/**
+ * @param {layer} layer - Changes the tile layer
+ */
+function switchLayer(layer) {
+  map.removeLayer(currentLayer);
+  currentLayer = L.tileLayer(layers[layer]);
+  map.addLayer(currentLayer);
+  $('.dropdown-submenu a.test').next('ul').toggle();
+}
 
+function routing() {
+  $.ajax({
+    type: 'POST',
+    url: '/routing',
+    dataType: 'json',
+    success: function() {
+      $('#action-button').text('Transform graph');
+    }
+  });
+}
 
-var layers = {
-  'Open Street Map': 'http://{s}.tile.osm.org/{z}/{x}/{y}.png',
-  'Google Maps': 'http://mt0.google.com/vt/lyrs=y&hl=en&x={x}&y={y}&z={z}&s=Ga',
-  'NASA': 'http://tileserver.maptiler.com/nasa/{z}/{x}/{y}.jpg'
-};
+function transformGraph() {
+  $('#graph-transformation').modal('show');
+}
 
 (function ($, window) {
   $.fn.contextMenu = function (settings) {
     return this.each(function () {
       $(this).on('contextmenu', function (e) {
-        if (e.ctrlKey) return;
-        var $menu = $(settings.menuSelector)
+        if (e.ctrlKey) {
+          return;
+        }
+        let $menu = $(settings.menuSelector)
           .data('invokedOn', $(e.target))
           .show()
           .css({
@@ -74,8 +175,8 @@ var layers = {
           .off('click')
           .on('click', 'a', function (e) {
             $menu.hide();
-            var $invokedOn = $menu.data('invokedOn');
-            var $selectedMenu = $(e.target);
+            let $invokedOn = $menu.data('invokedOn');
+            let $selectedMenu = $(e.target);
             settings.menuSelected.call(this, $invokedOn, $selectedMenu);
           });
         return false;
@@ -86,136 +187,85 @@ var layers = {
     });
 
     function getMenuPosition(mouse, direction, scrollDir) {
-      var win = $(window)[direction](),
-          scroll = $(window)[scrollDir](),
-          menu = $(settings.menuSelector)[direction](),
-          position = mouse + scroll;
-      if (mouse + menu > win && menu < mouse) 
+      let win = $(window)[direction]();
+      let scroll = $(window)[scrollDir]();
+      let menu = $(settings.menuSelector)[direction]();
+      let position = mouse + scroll;
+      if (mouse + menu > win && menu < mouse) {
         position -= menu;
-        return position;
+      }
+      return position;
     }
   };
 })(jQuery, window);
 
-function switchLayer(layer) {
-  map.removeLayer(current_layer);
-  current_layer = L.tileLayer(layers[layer]);
-  map.addLayer(current_layer);
+function addPolyline(lineSegment) {
+  let linesOnSegment = lineSegment.properties.lines;
+  let segmentWidth = linesOnSegment.length * (lineWeight + 1);
+  for(let j = 0; j < linesOnSegment.length; j++) {
+    L.polyline(L.GeoJSON.coordsToLatLngs(
+      lineSegment.geometry.coordinates, 0), 
+      {
+        color: colors[linesOnSegment[j]],
+        weight: lineWeight,
+        opacity: 1,
+        offset: j * (lineWeight + 1) - (segmentWidth / 2) + ((lineWeight + 1) / 2)
+      }
+    ).addTo(map);
+  }
 }
 
-function routing() {
-  $.ajax({
-    type: "POST",
-    url: "/routing",
-    dataType: "json",
-    success: function(graph) {
-      $("#action-button").text('Transform graph');
-    }
-  });
-}
-
-function transformGraph() {
-  $('#graph-transformation').modal('show');
-}
-
-document.getElementById("file").onchange = function() {
-  $("#fileform").submit();
-};
-
-var colors = ['red', '#08f', '#0c0', '#f80', 'purple', 'pink', 'yellow'];
 function wavelengthAssignment(algorithm) {
   $.ajax({
-    type: "POST",
+    type: 'POST',
     url: `/wavelength_assignment/${algorithm}`,
-    dataType: "json",
+    dataType: 'json',
     success: function(results) {
-      $("#score").text(results['lambda'] + ' wavelengths');
-      for (var i = 0; i < polylines.length; i++) {
+      $('#score').text(results.lambda + ' wavelengths');
+      for (let i = 0; i < polylines.length; i++) {
         map.removeLayer(polylines[i]);
       }
-      for (const [key, value] of Object.entries(results['colors'])) {
+      for (const [key, value] of Object.entries(results.colors)) {
         nodes.update({id: key, color: colors[value]});
         }
-      for (const [key, value] of Object.entries(results['fiber_colors'])) {
-        var geoJson = {
-          "type": "FeatureCollection",
-          "features": [
-            {"type": "Feature", "properties": {"lines": value},
-            "geometry": {"type": "LineString", "coordinates": [
-              [...results['coords'][key][0]], [...results['coords'][key][1]],
+      for (const [key, value] of Object.entries(results.fiber_colors)) {
+        let geoJson = {
+          'type': 'FeatureCollection',
+          'features': [
+            {'type': 'Feature', 'properties': {'lines': value},
+            'geometry': {'type': 'LineString', 'coordinates': [
+              [...results.coords[key][0]], [...results.coords[key][1]],
             ]}}]
         };
-        var lineWeight = 5;
-        var lineSegment, linesOnSegment, segmentCoords, segmentWidth;
-        geoJson.features.forEach(function(lineSegment) {
-          segmentCoords = 
-          linesOnSegment = lineSegment.properties.lines;
-          segmentWidth = linesOnSegment.length * (lineWeight + 1);
-          for(var j = 0; j < linesOnSegment.length; j++) {
-            L.polyline(L.GeoJSON.coordsToLatLngs(
-              lineSegment.geometry.coordinates, 0), 
-              {
-                color: colors[linesOnSegment[j]],
-                weight: lineWeight,
-                opacity: 1,
-                offset: j * (lineWeight + 1) - (segmentWidth / 2) + ((lineWeight + 1) / 2)
-              }
-            ).addTo(map);
-          }
-        });
+        geoJson.features.map(addPolyline);
       }
     }
   });
 }
 
-var nodes = new vis.DataSet();
+   
+   
 function graphTransformation(algorithm){
   $.ajax({
-    type: "POST",
-    url: "/graph_transformation",
-    dataType: "json",
+    type: 'POST',
+    url: '/graph_transformation',
+    dataType: 'json',
     success: function(graph){
       $('#graph-transformation').modal('show');
-      nodes.add(graph['nodes']);
-      var edges = new vis.DataSet(graph['links']);
-      const container = $("#network");
-      var data = {nodes: nodes, edges: edges};
-      var options = {};
+      nodes.add(graph.nodes);
+      let edges = new vis.DataSet(graph.links);
+      const container = $('#network');
+      let data = {nodes: nodes, edges: edges};
+      let options = {};
       const network = new vis.Network(container[0], data, options);
     }
   });
 }
 
-$('#graph-transformation').on('shown.bs.modal', function() {
-  graphTransformation();
-});
-
-function partial(func) {
-  var args = Array.prototype.slice.call(arguments, 1);
-  return function() {
-    var allArguments = args.concat(Array.prototype.slice.call(arguments));
-    return func.apply(this, allArguments);
-  };
-}
-
-var action = {
-  'Transform graph': transformGraph,
-  'Routing': routing,
-  'Open Street Map': partial(switchLayer, 'Open Street Map'),
-  'Google Maps': partial(switchLayer, 'Google Maps'),
-  'NASA': partial(switchLayer, 'NASA')
-}
-
-$('.dropdown-submenu a.test').on("click", function(e){
-  $(this).next('ul').toggle();
-  e.stopPropagation();
-  e.preventDefault();
-});
-
 $('body').contextMenu({
   menuSelector: '#contextMenu',
   menuSelected: function (invokedOn, selectedMenu) {
-    var row = selectedMenu.text();
+    let row = selectedMenu.text();  
     action[row]();
   }
 });
