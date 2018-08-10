@@ -10,5 +10,8 @@
         "browser": true,
         "jquery": true
     },
+    "rules": {
+        "no-invalid-this": 0
+    },
     "extends": ["eslint:recommended", "google"]
 }

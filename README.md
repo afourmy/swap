@@ -1,7 +1,7 @@
-[![Build Status](https://travis-ci.org/afourmy/SWAP.svg?branch=master)](https://travis-ci.org/afourmy/SWAP)
-[![Coverage Status](https://coveralls.io/repos/github/afourmy/SWAP/badge.svg?branch=master)](https://coveralls.io/github/afourmy/SWAP?branch=master)
+[![Build Status](https://travis-ci.org/afourmy/swap.svg?branch=master)](https://travis-ci.org/afourmy/swap)
+[![Coverage Status](https://coveralls.io/repos/github/afourmy/swap/badge.svg?branch=master)](https://coveralls.io/github/afourmy/swap?branch=master)
 
-# SWAP
+# Swap
 
 In optical networks, the Wavelength Divison Multiplexing (WDM) technology is used to increase the capacity of fibers to transmit information, by splitting a beam of light into different wavelengths, which travel simultaneously.
 
@@ -11,15 +11,15 @@ In an all-optical network, a wavelength can cross an optical switch without Opti
 
 The wavelength allocation problem consists in finding the minimum number of wavelengths that are required, and how to allocate them to lightpaths.
 
-SWAP is a solver for the Routing and Wavelength Assignment Problem (RWA).
+Swap is a solver for the Routing and Wavelength Assignment Problem (RWA).
 
-![SWAP: Europe](readme/swap.gif)
+![Swap: Europe](readme/swap.gif)
 
 Two methods were implemented to solve the wavelength assignment problem:
 - Linear programming (optimal solution)
 - "Largest degree first" heuristic
 
-You can find a [demo of SWAP](http://minto3.pythonanywhere.com) applied to the BBN Planet backbone in the USA:
+You can find a [demo of Swap](http://minto3.pythonanywhere.com) applied to the BBN Planet backbone in the USA:
 
 ![BBN Planet backbone](readme/bbnplanet.jpg)
 
@@ -78,7 +78,7 @@ To solve the RWA, we consider that the traffic paths are known __a priori__, and
 The SLE RWA is NP-complete, it can be reduced to a graph coloring problem with a simple graph transformation, as demonstrated below.
 
 To solver the SLE RWA, we will go through the following steps:
-  - **Routing**: for each path, we must find the shortest path. Instead of using Dijkstra algorithm, SWAP uses the **integer linear programming formulation of the shortest path** problem for the routing process. The metric used to find the shortest path is the **geographic distance**, calculated with the **Haversine formula**.
+  - **Routing**: for each path, we must find the shortest path. Instead of using Dijkstra algorithm, Swap uses the **integer linear programming formulation of the shortest path** problem for the routing process. The metric used to find the shortest path is the **geographic distance**, calculated with the **Haversine formula**.
   - **Graph transformation**: we create a new graph based on the optical network to turn the wavelength assignment process into a **graph coloring problem**.
   - **Wavelength assignment**: finally, we propose two algorithms to assign wavelengths: linear programming and the "Largest Degree First" heuristic.
 

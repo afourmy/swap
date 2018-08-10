@@ -62,14 +62,15 @@ $('#graph-transformation').on('shown.bs.modal', function() {
  * @param {function} func - any function
  * @return {function}
  */
-function partial(func) {
-  let args = Array.prototype.slice.call(arguments, 1);
+function partial(func, ...args) {
   return function() {
-    let allArguments = args.concat(Array.prototype.slice.call(arguments));
-    return func.apply(this, allArguments);
+    return func.apply(this, args);
   };
 }
 
+/**
+ * Unselect all links (all leaflet polylines)
+ */
 function unselectLines() {
   for (let i = 0; i < selectedLines.length; i++) {
     selectedLines[i].setStyle({color: '#0000FF'});
@@ -106,7 +107,7 @@ function createLink(link) {
   let pointList = [pointA, pointB];
   let polyline = new L.Polyline(pointList, {
     color: link.subtype === 'fiber' ? '#0000FF' : '#333333',
-    weight: 3, opacity: 1, smoothFactor: 1
+    weight: 3, opacity: 1, smoothFactor: 1,
   });
   polyline.addTo(map);
   polylines.push(polyline);
@@ -120,13 +121,13 @@ function createLink(link) {
         type: 'POST',
         url: `/path_${link.name}`,
         dataType: 'json',
-        success: function(data){
+        success: function(data) {
           for (let i = 0; i < data.length; i++) {
             polyline = linkNameToPolyline[data[i]];
             selectedLines.push(polyline);
             polyline.setStyle({color: 'red'});
           }
-        }
+        },
       });
     });
   }
@@ -142,6 +143,9 @@ function switchLayer(layer) {
   $('.dropdown-submenu a.test').next('ul').toggle();
 }
 
+/**
+ * Use linear programming to fid the shortest path for all traffic links.
+ */
 function routing() {
   $.ajax({
     type: 'POST',
@@ -149,18 +153,21 @@ function routing() {
     dataType: 'json',
     success: function() {
       $('#action-button').text('Transform graph');
-    }
+    },
   });
 }
 
+/**
+ * Open the bootstrap modal containing the traffic adjacency graph.
+ */
 function transformGraph() {
   $('#graph-transformation').modal('show');
 }
 
-(function ($, window) {
-  $.fn.contextMenu = function (settings) {
-    return this.each(function () {
-      $(this).on('contextmenu', function (e) {
+(function($, window) {
+  $.fn.contextMenu = function(settings) {
+    return this.each(function() {
+      $(this).on('contextmenu', function(e) {
         if (e.ctrlKey) {
           return;
         }
@@ -170,10 +177,10 @@ function transformGraph() {
           .css({
             position: 'absolute',
             left: getMenuPosition(e.clientX, 'width', 'scrollLeft'),
-            top: getMenuPosition(e.clientY, 'height', 'scrollTop')
+            top: getMenuPosition(e.clientY, 'height', 'scrollTop'),
           })
           .off('click')
-          .on('click', 'a', function (e) {
+          .on('click', 'a', function(e) {
             $menu.hide();
             let $invokedOn = $menu.data('invokedOn');
             let $selectedMenu = $(e.target);
@@ -181,11 +188,18 @@ function transformGraph() {
           });
         return false;
       });
-      $('body').click(function () {
+      $('body').click(function() {
         $(settings.menuSelector).hide();
       });
     });
 
+    /**
+    * Get menu position.
+    * @param {mouse} mouse
+    * @param {direction} direction
+    * @param {scrollDir} scrollDir
+    * @return {position}
+    */
     function getMenuPosition(mouse, direction, scrollDir) {
       let win = $(window)[direction]();
       let scroll = $(window)[scrollDir]();
@@ -199,22 +213,30 @@ function transformGraph() {
   };
 })(jQuery, window);
 
+/**
+ * Add a polyline to the map.
+ * @param {lineSegment} lineSegment
+ */
 function addPolyline(lineSegment) {
   let linesOnSegment = lineSegment.properties.lines;
   let segmentWidth = linesOnSegment.length * (lineWeight + 1);
-  for(let j = 0; j < linesOnSegment.length; j++) {
+  for (let j = 0; j < linesOnSegment.length; j++) {
     L.polyline(L.GeoJSON.coordsToLatLngs(
-      lineSegment.geometry.coordinates, 0), 
+      lineSegment.geometry.coordinates, 0),
       {
         color: colors[linesOnSegment[j]],
         weight: lineWeight,
         opacity: 1,
-        offset: j * (lineWeight + 1) - (segmentWidth / 2) + ((lineWeight + 1) / 2)
+        offset: j * (lineWeight + 1) - (segmentWidth/2) + ((lineWeight + 1)/2),
       }
     ).addTo(map);
   }
 }
 
+/**
+ * Call the wavelength assignment algorithm and display result.
+ * @param {algorithm} algorithm - Linear programming or Largest Degree First.
+ */
 function wavelengthAssignment(algorithm) {
   $.ajax({
     type: 'POST',
@@ -243,8 +265,11 @@ function wavelengthAssignment(algorithm) {
   });
 }
 
-   
-   
+/**
+ * Returns partial function
+ * @param {function} func - any function
+ * @return {function}
+ */
 function graphTransformation(algorithm){
   $.ajax({
     type: 'POST',
