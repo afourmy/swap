@@ -1,16 +1,17 @@
-language: python
-
-python:
-  - 3.4
-  - 3.5
-  - 3.6
-
-install:
-  - pip install -r requirements_dev.txt
-
-script:
-  - flake8
-  - coverage run --source=./swap -m pytest
-
-after_success:
-  - coveralls
+matrix:
+  include:
+    - language: python
+      python:
+        - 3.4
+        - 3.5
+        - 3.6
+      install:
+        - pip install -r requirements_dev.txt
+      script:
+        - flake8
+        - coverage run --source=./swap -m pytest
+      after_success:
+        - coveralls
+    - language: node_js
+      script: 
+        - npm lint

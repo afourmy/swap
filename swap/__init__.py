@@ -11,7 +11,6 @@ def register_extensions(app):
 
 
 def configure_database(app):
-
     @app.before_first_request
     def initialize_database():
         db.create_all()

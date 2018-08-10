@@ -103,6 +103,7 @@ class Link(Object):
     def __init__(self, **kwargs):
         super(Link, self).__init__(**kwargs)
         self.distance = 1
+
     @property
     def serialize(self):
         properties = {prop: getattr(self, prop) for prop in self.properties}

@@ -1,0 +1,28 @@
+{
+  "name": "swap",
+  "version": "1.0",
+  "description": "Wavelength allocation",
+  "main": "index.js",
+  "scripts": {
+    "lint": "eslint .",
+  },
+  "engines": {
+    "node": "8.11.3"
+  },
+  "devDependencies": {
+    "eslint": "5.3.9",
+    "eslint-plugin-google": "0.9.1",
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/afourmy/swap"
+  },
+  "keywords": [
+    "node",
+  ],
+  "author": "Antoine Fourmy",
+  "contributors": [
+    "Antoine fourmy <antoine.fourmy@gmail.com>"
+  ],
+  "license": "MIT"
+}
