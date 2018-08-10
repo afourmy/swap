@@ -6,10 +6,6 @@ db = SQLAlchemy()
 from swap.routes import swap
 
 
-def register_extensions(app):
-    db.init_app(app)
-
-
 def configure_database(app):
     @app.before_first_request
     def initialize_database():
@@ -26,6 +22,6 @@ def create_app():
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
     app.register_blueprint(swap)
-    register_extensions(app)
+    db.init_app(app)
     configure_database(app)
     return app
