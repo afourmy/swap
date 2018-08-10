@@ -1,5 +1,5 @@
-node_modules/**
 **/*.min.js
+node_modules
 swap/static/vis/vis.js
 swap/static/leaflet
 swap/static/leaflet-polyline
