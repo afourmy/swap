@@ -11,7 +11,8 @@
         "jquery": true
     },
     "rules": {
-        "no-invalid-this": 0
+        "no-invalid-this": 0,
+        "linebreak-style": 0
     },
     "extends": ["eslint:recommended", "google"]
 }
