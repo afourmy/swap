@@ -13,5 +13,7 @@ matrix:
       after_success:
         - coveralls
     - language: node_js
+      node_js: 
+        - "node"
       script: 
         - npm run lint
