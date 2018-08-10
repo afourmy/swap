@@ -237,7 +237,7 @@ function addPolyline(lineSegment) {
  * Call the wavelength assignment algorithm and display result.
  * @param {algorithm} algorithm - Linear programming or Largest Degree First.
  */
-function wavelengthAssignment(algorithm) {
+function wavelengthAssignment(algorithm) { // eslint-disable-line no-unused-vars
   $.ajax({
     type: 'POST',
     url: `/wavelength_assignment/${algorithm}`,
@@ -257,40 +257,38 @@ function wavelengthAssignment(algorithm) {
             {'type': 'Feature', 'properties': {'lines': value},
             'geometry': {'type': 'LineString', 'coordinates': [
               [...results.coords[key][0]], [...results.coords[key][1]],
-            ]}}]
+            ]}}],
         };
         geoJson.features.map(addPolyline);
       }
-    }
+    },
   });
 }
 
 /**
- * Returns partial function
- * @param {function} func - any function
- * @return {function}
+ * Transforms graph with vis.js.
  */
-function graphTransformation(algorithm){
+function graphTransformation() {
   $.ajax({
     type: 'POST',
     url: '/graph_transformation',
     dataType: 'json',
-    success: function(graph){
+    success: function(graph) {
       $('#graph-transformation').modal('show');
       nodes.add(graph.nodes);
       let edges = new vis.DataSet(graph.links);
       const container = $('#network');
       let data = {nodes: nodes, edges: edges};
       let options = {};
-      const network = new vis.Network(container[0], data, options);
-    }
+      new vis.Network(container[0], data, options);
+    },
   });
 }
 
 $('body').contextMenu({
   menuSelector: '#contextMenu',
-  menuSelected: function (invokedOn, selectedMenu) {
-    let row = selectedMenu.text();  
+  menuSelected: function(invokedOn, selectedMenu) {
+    let row = selectedMenu.text();
     action[row]();
-  }
+  },
 });
