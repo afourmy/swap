@@ -1,3 +1,4 @@
+node_modules/**
 **/*.min.js
 swap/static/vis/vis.js
 swap/static/leaflet
