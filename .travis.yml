@@ -14,4 +14,4 @@ matrix:
         - coveralls
     - language: node_js
       script: 
-        - npm lint
+        - npm run lint
