@@ -1,3 +1,5 @@
+"""Application and database initialization."""
+
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 
@@ -7,6 +9,7 @@ from swap.routes import swap
 
 
 def configure_database(app):
+    """Handle database initialization and shutdown."""
     @app.before_first_request
     def initialize_database():
         db.create_all()
@@ -17,6 +20,7 @@ def configure_database(app):
 
 
 def create_app():
+    """Flask app creation and configuration."""
     app = Flask(__name__)
     app.config['SECRET_KEY'] = 'key'
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
