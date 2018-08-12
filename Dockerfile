@@ -2,8 +2,8 @@ FROM python:3.6
 
 ENV FLASK_APP app.py
 
-COPY globewriter.py gunicorn.py requirements.txt ./
-COPY app app
+COPY app.py gunicorn.py requirements.txt ./
+COPY swap swap
 COPY migrations migrations
 
 RUN pip install -r requirements.txt
