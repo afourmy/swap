@@ -1,4 +1,5 @@
 flask
+flask_migrate
 flask_sqlalchemy
 numpy
 cvxopt
