@@ -3,3 +3,4 @@ flask_sqlalchemy
 numpy
 cvxopt
 xlrd
+gunicorn
