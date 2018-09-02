@@ -1,4 +1,9 @@
-/* global L network vis */
+/* global
+alertify: false
+L: false
+network: false
+vis: false
+*/
 
 let layers = {
   'Open Street Map': 'http://{s}.tile.osm.org/{z}/{x}/{y}.png',
