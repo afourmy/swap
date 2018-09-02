@@ -140,6 +140,7 @@ function switchLayer(layer) {
   currentLayer = L.tileLayer(layers[layer]);
   map.addLayer(currentLayer);
   $('.dropdown-submenu a.test').next('ul').toggle();
+  alertify.notify(`Switch to a new tile layer: ${layer}.`, 'success', 5);
 }
 
 /**
@@ -154,6 +155,11 @@ function routing() {
       $('#action-button').text('Transform graph');
     },
   });
+  alertify.notify(
+    'Routing successful: click on a black link to see its path.',
+    'success',
+    5
+  );
 }
 
 /**
@@ -260,6 +266,7 @@ function wavelengthAssignment(algorithm) { // eslint-disable-line no-unused-vars
         };
         geoJson.features.map(addPolyline);
       }
+      alertify.notify('Transformation successful', 'success', 5);
     },
   });
 }
