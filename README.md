@@ -164,22 +164,10 @@ The linear programming solution, while it always yields an optimal solution, is 
 
 # Credits
 
-[Bootstrap](https://getbootstrap.com/ "Bootstrap"): Front-end HTML/CSS framework.
-
-[Flask](http://flask.pocoo.org/ "Flask"): A microframework based on the Werkzeug toolkit and Jinja2 template engine.
-
-[Flask SQLAlchemy](http://flask-sqlalchemy.pocoo.org/ "Flask SQLAlchemy"): Adds support for SQLAlchemy to Flask.
-
-[Internet Topology Zoo](http://www.topology-zoo.org): A project to collect data network topologies from around the world..
-
-[Jquery](https://jquery.com/ "Jquery"): JavaScript library designed to simplify the client-side scripting of HTML.
+[Linear Programming and Algorithms for Communication Networks](https://www.amazon.com/Linear-Programming-Algorithms-Communication-Networks/dp/1466552638) by Eiji Oki.
 
 [Leaflet](http://leafletjs.com/ "Leaflet"): JavaScript library for mobile-friendly interactive maps.
 
 [Leaflet-polyline](https://github.com/bbecquet/Leaflet.PolylineDecorator "Leaflet polyline"): A leaflet plugin to define patterns on Polylines.
 
-[Linear Programming and Algorithms for Communication Networks](https://www.amazon.com/Linear-Programming-Algorithms-Communication-Networks/dp/1466552638) by Eiji Oki.
-
 [Vis](http://visjs.org): A dynamic, browser based JavaScript visualization library.
-
-[xlrd](https://github.com/python-excel/xlrd): Library to extract data from Microsoft Excel (tm) spreadsheet files.
