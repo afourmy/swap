@@ -19,7 +19,7 @@ Two methods were implemented to solve the wavelength assignment problem:
 - Linear programming (optimal solution)
 - "Largest degree first" heuristic
 
-You can find a [demo of Swap](http://minto3.pythonanywhere.com) applied to the BBN Planet backbone in the USA:
+You can find a [demo of Swap](https://afourmy.github.io/projects/swap.html) applied to the BBN Planet backbone in the USA:
 
 ![BBN Planet backbone](readme/bbnplanet.jpg)
 
